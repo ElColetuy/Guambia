@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Política de privacidad · Guambia Software</title>
+  <meta name="description" content="Política de privacidad de Guambia Software." />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#F4F8FC" />
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    try { const t = localStorage.getItem('guambia-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip">Saltar al contenido</a>
+
+  <header class="nav">
+    <a href="index.html" class="nav__logo" aria-label="Guambia Software, inicio"><img src="assets/logo.png" alt="Guambia Software" /></a>
+    <nav class="nav__links" id="menu">
+      <a href="index.html#servicios">Servicios</a>
+      <a href="index.html#nosotros">Nosotros</a>
+      <a href="index.html#equipo">Equipo</a>
+      <a href="index.html#contacto">Contacto</a>
+    </nav>
+    <div class="nav__actions">
+      <button class="ink-btn ink-btn--icon" id="themeToggle" aria-label="Cambiar entre modo claro y oscuro">☀</button>
+      <button class="ink-btn ink-btn--icon burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">☰</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="section legal">
+      <h1 class="title">Política de privacidad.</h1>
+      <p class="intro">Última actualización: 22 de setiembre de 2026.</p>
+
+      <div class="legal__body">
+        <p>En Guambia Software respetamos tu privacidad. Esta página explica, de forma simple, qué información recogemos a través de este sitio y qué hacemos con ella.</p>
+
+        <h2>Qué datos recogemos</h2>
+        <p>Este sitio es una landing informativa. No usa cookies de seguimiento ni analítica propia. Si nos escribís por el formulario de contacto o por mail, recibimos los datos que nos compartís de forma voluntaria: tu nombre, tu correo electrónico y el contenido del mensaje.</p>
+
+        <h2>Para qué los usamos</h2>
+        <p>Usamos esos datos únicamente para responder tu consulta y, si avanza el proyecto, para comunicarnos con vos durante el trabajo. No los vendemos ni se los cedemos a terceros.</p>
+
+        <h2>Dónde se alojan</h2>
+        <p>Este sitio está publicado como archivos estáticos en GitHub Pages / GitHub. Los mensajes que nos envíes por mail quedan en nuestra casilla de correo (Gmail), sujeta a la política de privacidad de Google.</p>
+
+        <h2>Tus derechos</h2>
+        <p>Podés pedirnos en cualquier momento que te digamos qué datos tuyos tenemos, que los corrijamos o que los eliminemos. Alcanza con que nos escribas.</p>
+
+        <h2>Contacto</h2>
+        <p>Para cualquier consulta sobre esta política o tus datos, escribinos a <a href="mailto:colettostudios@gmail.com" class="ink-link">colettostudios@gmail.com</a>.</p>
+      </div>
+
+      <p class="legal__back"><a href="index.html" class="ink-link">← Volver al inicio</a></p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__cols">
+      <div>
+        <img src="assets/logo.png" alt="Guambia Software" class="footer__logo" />
+      </div>
+      <div>
+        <p class="kicker">Servicios</p>
+        <a href="index.html#servicios">Sitios web</a>
+        <a href="index.html#servicios">Automatizaciones</a>
+        <a href="index.html#servicios">Control de stock</a>
+        <a href="index.html#servicios">Gestión de usuarios</a>
+      </div>
+      <div>
+        <p class="kicker">Contacto</p>
+        <a href="mailto:colettostudios@gmail.com">Email →</a>
+        <a href="#">LinkedIn ↗</a>
+        <a href="#">Instagram ↗</a>
+      </div>
+    </div>
+    <p class="footer__legal">© <span id="year">2026</span> Guambia Software · Hecho en Montevideo · <a href="privacidad.html">Política de privacidad</a></p>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

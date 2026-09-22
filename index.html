@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guambia Software</title>
+  <meta name="description" content="Guambia Software: sitios web, automatizaciones, control de stock y gestión de usuarios. Hecho en Montevideo, Uruguay." />
+  <meta name="theme-color" content="#F4F8FC" />
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    try { const t = localStorage.getItem('guambia-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip">Saltar al contenido</a>
+
+  <header class="nav">
+    <a href="#top" class="nav__logo" aria-label="Guambia Software, inicio"><img src="assets/logo.png" alt="Guambia Software" /></a>
+    <nav class="nav__links" id="menu">
+      <a href="#servicios">Servicios</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#equipo">Equipo</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <div class="nav__actions">
+      <button class="ink-btn ink-btn--icon" id="themeToggle" aria-label="Cambiar entre modo claro y oscuro">☀</button>
+      <button class="ink-btn ink-btn--icon burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">☰</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero" id="top">
+      <div class="hero__bg" aria-hidden="true"></div>
+      <div class="hero__inner">
+        <h1 class="hero__title"><img src="assets/logo.png" alt="Guambia Software" width="1227" height="638" /></h1>
+        <p class="hero__lead">
+          Elevamos tu marca, emprendimiento, negocio o empresa a nivel digital. Hacemos sitios web, automatizaciones y sistemas a medida, desde Montevideo.
+        </p>
+        <div class="hero__ctas">
+          <a href="#contacto" class="ink-btn ink-btn--blue">Quiero mi proyecto ↗</a>
+          <a href="#servicios" class="ink-btn">Qué hacemos</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICIOS -->
+    <section class="section" id="servicios">
+      <h2 class="title reveal">Lo que hacemos.</h2>
+      <p class="intro reveal">Sitios web, automatizaciones, soluciones para control de stock, gestión de usuarios y todo lo que tu proyecto necesite.</p>
+
+      <div class="cards">
+        <article class="card reveal">
+          <p class="kicker">Web · Diseño</p>
+          <h3>Sitios web</h3>
+          <p>Tu página, tu tienda o tu landing. Que cargue rápido, que se vea bien en el celular y que la puedas actualizar sin llamarnos.</p>
+        </article>
+        <article class="card reveal">
+          <p class="kicker">Procesos · Integraciones</p>
+          <h3>Automatizaciones</h3>
+          <p>Si hacés lo mismo todos los días a mano, probablemente lo podamos automatizar. Planillas, avisos, reportes, conexiones entre sistemas.</p>
+        </article>
+        <article class="card reveal">
+          <p class="kicker">Inventario · Ventas</p>
+          <h3>Control de stock</h3>
+          <p>Saber qué tenés, qué se vendió y qué hay que reponer, sin pelearte con el Excel.</p>
+        </article>
+        <article class="card reveal">
+          <p class="kicker">Accesos · Seguridad</p>
+          <h3>Gestión de usuarios</h3>
+          <p>Registros, roles y permisos para tu equipo y tus clientes. Cada uno ve lo que tiene que ver.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- NOSOTROS -->
+    <section class="section section--alt" id="nosotros">
+      <div class="about">
+        <div>
+          <h2 class="title reveal">Hecho en Uruguay.</h2>
+          <p class="reveal">Somos un equipo interdisciplinario: programación, diseño, arte y negocios en la misma mesa. Eso se nota en cada producto que entregamos.</p>
+          <p class="reveal">Trabajamos desde Montevideo con clientes que valoran la eficacia, el diseño, la cercanía y la seguridad. Y, antes que todo eso, la confianza.</p>
+          <ul class="values reveal">
+            <li>Eficacia</li><li>Diseño</li><li>Cercanía</li><li>Seguridad</li><li class="values__main">Confianza</li>
+          </ul>
+        </div>
+        <figure class="map reveal" aria-hidden="true">
+          <svg viewBox="0 0 240 230">
+            <path class="map__fill" d="M40,20 L56,14 L70,12 L84,18 L96,22 L108,30 L120,35 L128,46 L136,52 L150,58 L158,72 L165,85 L172,100 L178,112 L186,126 L192,138 L200,154 L208,168 L196,176 L186,180 L175,184 L162,192 L150,196 L135,194 L122,198 L110,200 L92,204 L72,200 L58,202 L48,198 L38,188 L34,168 L30,150 L26,120 L30,95 L36,65 L34,42 Z"/>
+            <path class="map__line" d="M40,20 L56,14 L70,12 L84,18 L96,22 L108,30 L120,35 L128,46 L136,52 L150,58 L158,72 L165,85 L172,100 L178,112 L186,126 L192,138 L200,154 L208,168 L196,176 L186,180 L175,184 L162,192 L150,196 L135,194 L122,198 L110,200 L92,204 L72,200 L58,202 L48,198 L38,188 L34,168 L30,150 L26,120 L30,95 L36,65 L34,42 Z"/>
+            <circle class="map__dot" cx="112" cy="192" r="6"/>
+          </svg>
+          <figcaption>Montevideo</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- EQUIPO -->
+    <section class="section" id="equipo">
+      <h2 class="title reveal">Dos personas, muchos oficios.</h2>
+      <div class="team">
+        <article class="person reveal">
+          <div class="person__head">
+            <span class="avatar avatar--blue">BA</span>
+            <div>
+              <h3>Bruno Arias</h3>
+              <p class="person__role">Co-Founder</p>
+            </div>
+          </div>
+          <p>Técnico Programador egresado de ORT y estudiante de Ingeniería en Inteligencia Artificial y Ciencia de Datos en UCU, con conocimientos avanzados en economía.</p>
+          <p>Tiene más de tres años de experiencia en desarrollo de software en Qualis Fidelis y Tribu, trabajando en arquitectura de software, integraciones, infraestructura cloud y desarrollo de productos digitales.</p>
+        </article>
+        <article class="person reveal">
+          <div class="person__head">
+            <span class="avatar avatar--red">RC</span>
+            <div>
+              <h3>Rodrigo Coletto</h3>
+              <p class="person__role">Co-Founder</p>
+            </div>
+          </div>
+          <p>Emprendedor indie, artista y estudiante de Negocios Digitales. Desarrolla juegos y aplicaciones móviles a través de <a href="https://www.colettostudios.com" target="_blank" rel="noopener" class="ink-link">Coletto Studios</a>, combinando tecnología, diseño, arte y negocios.</p>
+          <p>Tiene experiencia en organizaciones como Mercado Libre, TCS, Cisco y el Ministerio de Economía y Finanzas, y aporta una mirada multidisciplinaria a cada proyecto.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section class="section contact" id="contacto">
+      <div class="contact__box reveal">
+        <h2 class="title">¿Tenés una idea? Hablemos.</h2>
+        <p>Contanos qué necesitás y te respondemos con una propuesta. Sin vueltas.</p>
+        <div class="hero__ctas">
+          <a href="mailto:colettostudios@gmail.com" class="ink-btn ink-btn--red">Escribinos ↗</a>
+          <a href="mailto:colettostudios@gmail.com" class="ink-link">colettostudios@gmail.com</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__cols">
+      <div>
+        <img src="assets/logo.png" alt="Guambia Software" class="footer__logo" />
+      </div>
+      <div>
+        <p class="kicker">Servicios</p>
+        <a href="#servicios">Sitios web</a>
+        <a href="#servicios">Automatizaciones</a>
+        <a href="#servicios">Control de stock</a>
+        <a href="#servicios">Gestión de usuarios</a>
+      </div>
+      <div>
+        <p class="kicker">Contacto</p>
+        <a href="mailto:colettostudios@gmail.com">Email →</a>
+        <a href="#">LinkedIn ↗</a>
+        <a href="#">Instagram ↗</a>
+      </div>
+    </div>
+    <p class="footer__legal">© <span id="year">2026</span> Guambia Software · Hecho en Montevideo · <a href="privacidad.html">Política de privacidad</a></p>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
