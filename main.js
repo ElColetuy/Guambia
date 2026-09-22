@@ -34,27 +34,56 @@
   }, { threshold: 0.15 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  // Link activo en el menú
+  // Link activo en el menú + acento de color por sección
   const links = [...document.querySelectorAll('.nav__links a')];
   const spy = new IntersectionObserver(entries => {
     entries.forEach(e => {
-      if (e.isIntersecting) links.forEach(l => l.classList.toggle('active', l.hash === '#' + e.target.id));
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.toggle('active', l.hash === '#' + e.target.id));
+        root.dataset.accent = e.target.id;
+      }
     });
   }, { rootMargin: '-45% 0px -50% 0px' });
   document.querySelectorAll('section[id]').forEach(s => spy.observe(s));
 
-  // La foto del hero baja más lento que el contenido
+  // Barra de progreso de scroll (solo si el navegador no anima scroll-timeline por CSS)
+  const progressBar = document.querySelector('.progress-bar');
+  const needsProgressFallback = progressBar && !(window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()'));
+
+  // Foto y contenido del hero se mueven distinto al de scrollear (parallax + nav que se contrae)
   const heroBg = document.querySelector('.hero__bg');
-  if (heroBg && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const heroInner = document.querySelector('.hero__inner');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const heroHeight = () => (document.querySelector('.hero')?.offsetHeight || window.innerHeight);
+
+  {
     let ticking = false;
-    window.addEventListener('scroll', () => {
+    const onScroll = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        heroBg.style.setProperty('--py', `${Math.min(scrollY, 1000) * 0.25}px`);
+        const y = window.scrollY;
+
+        nav.classList.toggle('nav--scrolled', y > 8);
+
+        if (!reduceMotion && heroBg) {
+          heroBg.style.setProperty('--py', `${Math.min(y, 1000) * 0.25}px`);
+        }
+        if (!reduceMotion && heroInner) {
+          const fade = Math.max(1 - y / (heroHeight() * 0.75), 0);
+          heroInner.style.opacity = fade;
+          heroInner.style.transform = `translateY(${Math.min(y * 0.18, 70)}px)`;
+        }
+        if (needsProgressFallback) {
+          const max = document.documentElement.scrollHeight - window.innerHeight;
+          const pct = max > 0 ? Math.min(y / max, 1) : 0;
+          progressBar.style.transform = `scaleX(${pct})`;
+        }
         ticking = false;
       });
-    }, { passive: true });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
   }
 
   document.getElementById('year').textContent = new Date().getFullYear();
