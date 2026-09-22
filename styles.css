@@ -16,7 +16,7 @@
   --wobble: 3px 6px 4px 5px / 5px 3px 6px 4px;
   --pad: clamp(16px, 5vw, 56px);
   --f-ink: 'Sedgwick Ave', Georgia, sans-serif;
-  --f-body: 'Comic Neue', cursive, system-ui, sans-serif;
+  --f-body: 'Playpen Sans', cursive, system-ui, sans-serif;
   --f-mono: 'JetBrains Mono', ui-monospace, monospace;
   color-scheme: light;
 }
