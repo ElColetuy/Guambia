@@ -1,18 +1,4 @@
 /* ============ Guambia Software ============ */
-@font-face {
-  font-family: 'Moonlit Flow';
-  src: url('assets/fonts/moonlit-flow.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Moonlit Flow';
-  src: url('assets/fonts/moonlit-flow-italic.ttf') format('truetype');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
 
 :root {
   --bg: #F4F8FC;
@@ -29,7 +15,7 @@
   --veil-soft: rgba(244, 248, 252, .5);
   --wobble: 3px 6px 4px 5px / 5px 3px 6px 4px;
   --pad: clamp(16px, 5vw, 56px);
-  --f-ink: 'Moonlit Flow', Georgia, sans-serif;
+  --f-ink: 'Sedgwick Ave', Georgia, sans-serif;
   --f-body: 'Comic Neue', cursive, system-ui, sans-serif;
   --f-mono: 'JetBrains Mono', ui-monospace, monospace;
   color-scheme: light;

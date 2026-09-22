@@ -45,7 +45,7 @@
 
   // La foto del hero baja más lento que el contenido
   const heroBg = document.querySelector('.hero__bg');
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (heroBg && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     let ticking = false;
     window.addEventListener('scroll', () => {
       if (ticking) return;
