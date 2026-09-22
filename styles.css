@@ -152,8 +152,6 @@ p { margin: 0 0 1em; }
 .project h3 .arrow { font-size: 18px; }
 .project:hover h3 .arrow { transform: translate(2px, -2px); }
 .project > p:last-child { margin: 0 0 22px; color: var(--text); font-size: 15.5px; }
-.project--soon { cursor: default; }
-.project--soon:hover { transform: none; box-shadow: 5px 5px 0 var(--ink); }
 .project--soon .kicker, .project--soon h3, .project--soon > p { opacity: .7; }
 
 .about { display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px; align-items: center; max-width: 1180px; margin: 0 auto; }
