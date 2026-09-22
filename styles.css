@@ -153,11 +153,11 @@ p { margin: 0 0 1em; }
 .person__role { font-style: italic; color: var(--muted); margin: 4px 0 0; }
 .person > p { font-size: 17px; }
 .avatar {
-  width: 64px; height: 64px; flex: none; display: grid; place-items: center;
-  font: 400 24px/1 var(--f-ink); color: #0E1636; border: 2px solid var(--ink);
-  border-radius: 48% 52% 45% 55% / 55% 45% 52% 48%; box-shadow: 3px 3px 0 var(--ink);
+  width: 84px; height: 84px; flex: none; object-fit: cover; object-position: center 20%;
+  border: 2px solid var(--ink); border-radius: 48% 52% 45% 55% / 55% 45% 52% 48%;
+  box-shadow: 3px 3px 0 var(--ink); background: var(--paper);
 }
-.avatar--blue { background: var(--celeste); } .avatar--red { background: var(--red-soft); }
+.avatar--blue { box-shadow: 3px 3px 0 var(--blue); } .avatar--red { box-shadow: 3px 3px 0 var(--red); }
 
 .contact__box {
   background: var(--paper); border: 2px solid var(--ink); border-radius: var(--wobble);
