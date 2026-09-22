@@ -123,6 +123,7 @@ p { margin: 0 0 1em; }
   padding: 10px var(--pad) 14px; background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   transition: padding .35s var(--ease-out), background-color .35s, box-shadow .35s;
+  overflow-anchor: none;
 }
 .nav::after {
   content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 8px; background: var(--ink);

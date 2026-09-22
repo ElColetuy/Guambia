@@ -58,13 +58,18 @@
 
   {
     let ticking = false;
+    let navScrolled = false;
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
         const y = window.scrollY;
 
-        nav.classList.toggle('nav--scrolled', y > 8);
+        // Umbral con histéresis: evita que el nav tiemble entrando y
+        // saliendo de "scrolled" cuando el scroll queda justo en el límite.
+        if (!navScrolled && y > 40) { navScrolled = true; }
+        else if (navScrolled && y < 12) { navScrolled = false; }
+        nav.classList.toggle('nav--scrolled', navScrolled);
 
         if (!reduceMotion && heroBg) {
           heroBg.style.setProperty('--py', `${Math.min(y, 1000) * 0.25}px`);
