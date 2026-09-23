@@ -2,6 +2,8 @@
   const root = document.documentElement;
   const nav = document.querySelector('.nav');
   const themeBtn = document.getElementById('themeToggle');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const pointerFine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   // Modo claro / oscuro
   const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -26,21 +28,61 @@
   burger.addEventListener('click', () => setMenu(!nav.classList.contains('menu-open')));
   document.querySelectorAll('.nav__links a').forEach(a => a.addEventListener('click', () => setMenu(false)));
 
+  // ---------- Cursor propio (solo con mouse de verdad, no en celular/tablet) ----------
+  // Un puntito pegado al cursor y un aro que lo sigue con un poco de
+  // retraso; los dos crecen sobre botones, tarjetas y links.
+  if (pointerFine && !reduceMotion) {
+    const dot = document.createElement('div'); dot.className = 'cursor-dot'; dot.setAttribute('aria-hidden', 'true');
+    const ring = document.createElement('div'); ring.className = 'cursor-ring'; ring.setAttribute('aria-hidden', 'true');
+    document.body.append(dot, ring);
+    document.body.classList.add('has-cursor');
+
+    let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my, seen = false;
+    window.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.transform = `translate(${mx}px, ${my}px)`;
+      if (!seen) { seen = true; ring.style.transform = `translate(${mx}px, ${my}px)`; rx = mx; ry = my; document.body.classList.add('cursor-visible'); }
+    }, { passive: true });
+    document.addEventListener('mouseleave', () => document.body.classList.remove('cursor-visible'));
+    document.addEventListener('mouseenter', () => document.body.classList.add('cursor-visible'));
+
+    const ringTick = () => {
+      rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
+      ring.style.transform = `translate(${rx}px, ${ry}px)`;
+      requestAnimationFrame(ringTick);
+    };
+    requestAnimationFrame(ringTick);
+
+    const HOVER_SEL = 'a, button, .card, .project, .person, .values li, input, textarea, select';
+    document.addEventListener('mouseover', e => { if (e.target.closest(HOVER_SEL)) document.body.classList.add('cursor-hover'); });
+    document.addEventListener('mouseout', e => { if (e.target.closest(HOVER_SEL)) document.body.classList.remove('cursor-hover'); });
+    document.addEventListener('mousedown', () => document.body.classList.add('cursor-down'));
+    document.addEventListener('mouseup', () => document.body.classList.remove('cursor-down'));
+
+    // Botones con tirón magnético: se corren un poco hacia el mouse.
+    document.querySelectorAll('.ink-btn').forEach(btn => {
+      btn.addEventListener('mousemove', e => {
+        const r = btn.getBoundingClientRect();
+        const mx2 = e.clientX - r.left - r.width / 2;
+        const my2 = e.clientY - r.top - r.height / 2;
+        btn.style.transform = `translate(${mx2 * 0.22}px, ${my2 * 0.32 - 2}px)`;
+      });
+      btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+    });
+  }
+
   // ---------- Efecto de "decodificarse" en los textos ----------
   // Arranca cada texto en caracteres al azar y los va revelando de
   // izquierda a derecha hasta el texto real, como si se descifrara.
   // Espacios, números y signos de puntuación no se scramblean.
-  // Inspirado en lo que probó Bruno, pero con la duración recortada
-  // bastante (acá dura bastante menos que en la idea original).
-  const reduceMotionScramble = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const SCRAMBLE_LOWER = 'abcdefghijklmnñopqrstuvwxyz';
   const SCRAMBLE_UPPER = SCRAMBLE_LOWER.toUpperCase();
   const LETTER_RE = /[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ]/;
 
-  function scrambleReveal(el, { speed = 12, min = 220, max = 620 } = {}) {
+  function scrambleReveal(el, { speed = 6, min = 110, max = 320 } = {}) {
     if (!el || el.dataset.scrambled) return;
     el.dataset.scrambled = '1';
-    if (reduceMotionScramble) return;
+    if (reduceMotion) return;
 
     const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
     const nodes = [];
@@ -82,7 +124,7 @@
     targets.forEach(t => scrambleReveal(t));
   }
 
-  if (!reduceMotionScramble) {
+  if (!reduceMotion) {
     const scrambleIO = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) { scrambleWithin(e.target); scrambleIO.unobserve(e.target); }
@@ -92,7 +134,7 @@
 
     // El texto del hero ya está a la vista al cargar: no depende de scroll.
     const heroLead = document.querySelector('.hero__lead');
-    if (heroLead) setTimeout(() => scrambleReveal(heroLead), 300);
+    if (heroLead) setTimeout(() => scrambleReveal(heroLead), 250);
   }
 
   // Aparición atada al scroll, como una película: bajar adelanta la
@@ -101,10 +143,9 @@
   // Chrome/Edge lo hacen nativo en CSS con animation-timeline: view()
   // (ver styles.css). Acá solo cubrimos a los navegadores que todavía
   // no lo soportan, calculando el mismo progreso 0→1 a mano.
-  const reduceMotionReveal = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const viewTimelineSupported = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
 
-  if (reduceMotionReveal) {
+  if (reduceMotion) {
     document.querySelectorAll('.reveal').forEach(el => el.style.setProperty('--p', 1));
   } else if (!viewTimelineSupported) {
     const revealEls = [...document.querySelectorAll('.reveal')];
@@ -113,7 +154,7 @@
 
     // Progreso 0→1 según cuánto del elemento ya cruzó la pantalla:
     // 0 = recién asoma por abajo, 1 = ya entró del todo. El rango es
-    // más largo que el elemento en sí (55% del alto+viewport) para que
+    // más largo que el elemento en sí (38% del alto+viewport) para que
     // la animación se note mientras el elemento está en pantalla, no
     // solo en el instante en que cruza el borde. Mismo criterio que el
     // animation-range del CSS (entry 0% cover 38%).
@@ -155,17 +196,23 @@
   const progressBar = document.querySelector('.progress-bar');
   const needsProgressFallback = progressBar && !(window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()'));
 
+  // Botón de "volver arriba": aparece después del hero
+  const toTop = document.getElementById('toTop');
+  if (toTop) {
+    toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }));
+  }
+
   // Foto y contenido del hero se mueven distinto al de scrollear (parallax + nav que se contrae)
   const heroBg = document.querySelector('.hero__bg');
   const heroFg = document.querySelector('.hero__fg');
   const heroInner = document.querySelector('.hero__inner');
   const heroLogo = document.querySelector('.hero__title');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const heroHeight = () => (document.querySelector('.hero')?.offsetHeight || window.innerHeight);
 
   {
     let ticking = false;
     let navScrolled = false;
+    let pastHero = false;
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
@@ -177,6 +224,12 @@
         if (!navScrolled && y > 40) { navScrolled = true; }
         else if (navScrolled && y < 12) { navScrolled = false; }
         nav.classList.toggle('nav--scrolled', navScrolled);
+
+        if (toTop) {
+          const showAt = heroHeight() * 0.6;
+          if (!pastHero && y > showAt) { pastHero = true; toTop.classList.add('show'); }
+          else if (pastHero && y < showAt * 0.7) { pastHero = false; toTop.classList.remove('show'); }
+        }
 
         if (!reduceMotion && heroBg) {
           heroBg.style.setProperty('--py', `${Math.min(y, 1000) * 0.25}px`);
