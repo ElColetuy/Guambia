@@ -26,13 +26,24 @@
   burger.addEventListener('click', () => setMenu(!nav.classList.contains('menu-open')));
   document.querySelectorAll('.nav__links a').forEach(a => a.addEventListener('click', () => setMenu(false)));
 
-  // Aparición al bajar
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-    });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  // Aparición al bajar, y desaparición al subir (como rebobinar el scroll).
+  // Dos observadores con distinto margen: uno "generoso" para mostrar apenas
+  // se acerca, y uno "estricto" para esconder solo cuando ya quedó bien
+  // afuera de la pantalla. Así un scroll lento o con rebote no hace
+  // parpadear el elemento justo en el borde.
+  const reduceMotionReveal = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduceMotionReveal) {
+    const revealEls = document.querySelectorAll('.reveal');
+    const showIO = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+    const hideIO = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (!e.isIntersecting) e.target.classList.remove('in'); });
+    }, { threshold: 0, rootMargin: '35% 0px 35% 0px' });
+    revealEls.forEach(el => { showIO.observe(el); hideIO.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  }
 
   // Link activo en el menú + acento de color por sección
   const links = [...document.querySelectorAll('.nav__links a')];

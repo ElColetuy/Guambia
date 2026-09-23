@@ -334,12 +334,22 @@ p { margin: 0 0 1em; }
 .legal__body p { font-size: 17px; color: var(--text); }
 .legal__back { margin-top: 44px; }
 
-/* ---------- Aparición al bajar ---------- */
+/* ---------- Aparición al bajar (y desaparición al subir, como rebobinar) ---------- */
 .reveal {
   opacity: 0; transform: translateY(28px) scale(.98); filter: blur(6px);
   transition: opacity .8s var(--ease-out), transform .8s var(--ease-out), filter .8s var(--ease-out);
 }
 .reveal.in { opacity: 1; transform: none; filter: blur(0); }
+
+/* Tarjetas (proyectos y equipo): entran girando, como si se dieran vuelta */
+.projects, .team { perspective: 1600px; }
+.reveal.flip {
+  transform: translateY(36px) rotateY(-70deg) scale(.92); transform-origin: 20% 50%;
+  filter: blur(5px);
+  transition: opacity .8s var(--ease-out), transform .9s var(--ease-spring), filter .8s var(--ease-out);
+}
+.reveal.flip.in { transform: none; filter: blur(0); }
+.projects .project:nth-child(odd).reveal.flip { transform-origin: 80% 50%; transform: translateY(36px) rotateY(70deg) scale(.92); }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1020px) {
@@ -361,7 +371,7 @@ p { margin: 0 0 1em; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; filter: none; transition: none; }
+  .reveal, .reveal.flip { opacity: 1; transform: none; filter: none; transition: none; }
   .map__line { stroke-dashoffset: 0; animation: none !important; }
   .hero__title img { animation: none; }
   .hero__blob { animation: none !important; }
