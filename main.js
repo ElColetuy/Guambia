@@ -26,23 +26,44 @@
   burger.addEventListener('click', () => setMenu(!nav.classList.contains('menu-open')));
   document.querySelectorAll('.nav__links a').forEach(a => a.addEventListener('click', () => setMenu(false)));
 
-  // Aparición al bajar, y desaparición al subir (como rebobinar el scroll).
-  // Dos observadores con distinto margen: uno "generoso" para mostrar apenas
-  // se acerca, y uno "estricto" para esconder solo cuando ya quedó bien
-  // afuera de la pantalla. Así un scroll lento o con rebote no hace
-  // parpadear el elemento justo en el borde.
+  // Aparición atada al scroll, como una película: bajar adelanta la
+  // animación, subir la rebobina, y el movimiento pasa mientras el
+  // elemento cruza la pantalla (no de golpe al tocar un borde).
+  // Chrome/Edge lo hacen nativo en CSS con animation-timeline: view()
+  // (ver styles.css). Acá solo cubrimos a los navegadores que todavía
+  // no lo soportan, calculando el mismo progreso 0→1 a mano.
   const reduceMotionReveal = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!reduceMotionReveal) {
-    const revealEls = document.querySelectorAll('.reveal');
-    const showIO = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
-    }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
-    const hideIO = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (!e.isIntersecting) e.target.classList.remove('in'); });
-    }, { threshold: 0, rootMargin: '35% 0px 35% 0px' });
-    revealEls.forEach(el => { showIO.observe(el); hideIO.observe(el); });
-  } else {
-    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  const viewTimelineSupported = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
+
+  if (reduceMotionReveal) {
+    document.querySelectorAll('.reveal').forEach(el => el.style.setProperty('--p', 1));
+  } else if (!viewTimelineSupported) {
+    const revealEls = [...document.querySelectorAll('.reveal')];
+    const mapEl = document.querySelector('.map');
+    const mapLine = document.querySelector('.map__line');
+
+    // Progreso 0→1 según cuánto del elemento ya cruzó la pantalla:
+    // 0 = recién asoma por abajo, 1 = ya entró del todo (con margen).
+    const progressOf = el => {
+      const r = el.getBoundingClientRect();
+      const span = r.height + window.innerHeight * 0.35;
+      const raw = (window.innerHeight - r.top) / span;
+      return Math.max(0, Math.min(1, raw));
+    };
+
+    let revealTicking = false;
+    const updateReveal = () => {
+      if (revealTicking) return;
+      revealTicking = true;
+      requestAnimationFrame(() => {
+        revealEls.forEach(el => el.style.setProperty('--p', progressOf(el).toFixed(3)));
+        if (mapEl && mapLine) mapLine.style.strokeDashoffset = String(1000 * (1 - progressOf(mapEl)));
+        revealTicking = false;
+      });
+    };
+    window.addEventListener('scroll', updateReveal, { passive: true });
+    window.addEventListener('resize', updateReveal);
+    updateReveal();
   }
 
   // Link activo en el menú + acento de color por sección

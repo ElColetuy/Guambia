@@ -48,6 +48,13 @@
   inherits: true;
   initial-value: #A9D3F7;
 }
+/* Progreso de "aparición" de cada elemento (0 a 1), registrado como número
+   para que el navegador lo pueda animar cuadro a cuadro con el scroll. */
+@property --p {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
 :root {
   --accent: var(--blue);
   --accent-soft: var(--celeste);
@@ -278,8 +285,6 @@ p { margin: 0 0 1em; }
 .map svg { width: 100%; max-width: 340px; margin: 0 auto; overflow: visible; }
 .map__fill { fill: var(--celeste); transform: translate(-8px, 8px); transition: fill .5s; }
 .map__line { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; stroke-dasharray: 1000; stroke-dashoffset: 1000; }
-.map.in .map__line { animation: draw 2.2s .2s ease forwards; }
-@keyframes draw { to { stroke-dashoffset: 0; } }
 .map__dot { fill: var(--red); stroke: var(--ink); stroke-width: 2; }
 .map figcaption { font: 500 18px var(--f-ink); text-transform: uppercase; color: var(--red); margin-top: 6px; transform: rotate(-3deg); }
 
@@ -334,22 +339,43 @@ p { margin: 0 0 1em; }
 .legal__body p { font-size: 17px; color: var(--text); }
 .legal__back { margin-top: 44px; }
 
-/* ---------- Aparición al bajar (y desaparición al subir, como rebobinar) ---------- */
+/* ---------- Aparición al bajar / al subir, atada al scroll ----------
+   Como una película: bajar adelanta la animación, subir la rebobina, y
+   el movimiento ocurre mientras el elemento está pasando por la pantalla
+   (no de golpe al cruzar un borde). En navegadores que soportan
+   animation-timeline: view() (Chrome/Edge), esto lo maneja el propio CSS,
+   frame a frame, sin JS. Donde no hay soporte, main.js calcula el mismo
+   progreso "a mano" en cada scroll y lo aplica como variables --p/--rp. */
 .reveal {
-  opacity: 0; transform: translateY(28px) scale(.98); filter: blur(6px);
-  transition: opacity .8s var(--ease-out), transform .8s var(--ease-out), filter .8s var(--ease-out);
+  --p: 0; /* 0 = todavía no apareció, 1 = ya apareció del todo */
+  opacity: var(--p);
+  transform: translateY(calc(28px * (1 - var(--p)))) scale(calc(.98 + .02 * var(--p)));
+  filter: blur(calc(6px * (1 - var(--p))));
 }
-.reveal.in { opacity: 1; transform: none; filter: blur(0); }
-
-/* Tarjetas (proyectos y equipo): entran girando, como si se dieran vuelta */
-.projects, .team { perspective: 1600px; }
 .reveal.flip {
-  transform: translateY(36px) rotateY(-70deg) scale(.92); transform-origin: 20% 50%;
-  filter: blur(5px);
-  transition: opacity .8s var(--ease-out), transform .9s var(--ease-spring), filter .8s var(--ease-out);
+  --rp: 0; /* signo del giro: -1 o 1 según el lado */
+  transform: translateY(calc(36px * (1 - var(--p)))) rotateY(calc(70deg * var(--rp) * (1 - var(--p)))) scale(calc(.92 + .08 * var(--p)));
+  transform-origin: 30% 50%;
+  filter: blur(calc(5px * (1 - var(--p))));
 }
-.reveal.flip.in { transform: none; filter: blur(0); }
-.projects .project:nth-child(odd).reveal.flip:not(.in) { transform-origin: 80% 50%; transform: translateY(36px) rotateY(70deg) scale(.92); }
+.projects, .team { perspective: 1600px; }
+.projects .project:nth-child(odd).reveal.flip { --rp: 1; transform-origin: 70% 50%; }
+.projects .project:nth-child(even).reveal.flip { --rp: -1; }
+.team .person.reveal.flip { --rp: -1; }
+.team .person:nth-child(2).reveal.flip { --rp: 1; transform-origin: 70% 50%; }
+
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: reveal-scrub linear both; animation-timeline: view(); animation-range: entry;
+  }
+  @keyframes reveal-scrub {
+    from { --p: 0; } to { --p: 1; }
+  }
+  .map__line { animation: map-draw-scrub linear both; animation-timeline: view(); animation-range: entry; }
+  @keyframes map-draw-scrub { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
+}
+/* Sin soporte nativo para animation-timeline: view(), main.js calcula
+   --p a mano en cada scroll y mueve el trazo del mapa directo por JS. */
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1020px) {
@@ -371,7 +397,7 @@ p { margin: 0 0 1em; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal, .reveal.flip { opacity: 1; transform: none; filter: none; transition: none; }
+  .reveal, .reveal.flip { opacity: 1; transform: none; filter: none; transition: none; animation: none !important; }
   .map__line { stroke-dashoffset: 0; animation: none !important; }
   .hero__title img { animation: none; }
   .hero__blob { animation: none !important; }
