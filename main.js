@@ -118,7 +118,7 @@
           // El movimiento es chico a propósito (menos que el overscan del
           // CSS) para que nunca se abra un hueco arriba; el "avance" lo da
           // sobre todo el agrandado (scale), que sí puede crecer libre.
-          heroFg.style.setProperty('--pyf', `${yf * 0.06}px`);
+          heroFg.style.setProperty('--pyf', `${yf * 0.09}px`);
           heroFg.style.setProperty('--sf', `${1.06 + yf * 0.0005}`);
         }
         if (!reduceMotion && heroInner) {

@@ -167,13 +167,26 @@ p { margin: 0 0 1em; }
    estaba el cielo se difumina con una máscara para que se mezcle con
    el fondo borroso en vez de cortar en seco. */
 .hero__fg {
-  position: absolute; inset: -90px -30px -30px -30px; z-index: -2;
-  background: url('assets/rambla-fg.webp') center 62% / cover no-repeat;
-  filter: saturate(1.25) contrast(1.1) brightness(1.04) blur(.4px);
+  position: absolute; inset: -90px -30px -30px -30px; z-index: -2; overflow: hidden;
   transform: translateY(var(--pyf, 0)) scale(var(--sf, 1.06));
   transform-origin: 50% 100%;
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%);
           mask-image: linear-gradient(to bottom, transparent, #000 22%);
+}
+/* La imagen en sí vive adentro, con su propio movimiento continuo
+   (flota sola, no depende del scroll) — separado del transform de
+   .hero__fg, que sí reacciona al scroll pero a otro ritmo. Juntos dan
+   la sensación de que el primer plano tiene vida propia y está
+   claramente más adelante que el resto. */
+.hero__fg__img {
+  position: absolute; inset: -50px -25px -25px -25px;
+  background: url('assets/rambla-fg.webp') center 62% / cover no-repeat;
+  filter: saturate(1.25) contrast(1.1) brightness(1.04) blur(.4px);
+  animation: fg-float 6.5s ease-in-out infinite;
+}
+@keyframes fg-float {
+  0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+  50% { transform: translateY(-18px) scale(1.02) rotate(-.3deg); }
 }
 .hero::before {
   content: ''; position: absolute; inset: 0; z-index: -1;
@@ -414,6 +427,7 @@ p { margin: 0 0 1em; }
   .reveal, .reveal.flip { opacity: 1; transform: none; filter: none; transition: none; animation: none !important; }
   .map__line { stroke-dashoffset: 0; animation: none !important; }
   .hero__title img { animation: none; }
+  .hero__fg__img { animation: none !important; }
   .hero__blob { animation: none !important; }
   .card:hover, .project:hover, .person:hover, .values li:hover, .ink-btn:hover { transform: none; }
   :root { transition: none; }
