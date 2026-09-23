@@ -26,6 +26,75 @@
   burger.addEventListener('click', () => setMenu(!nav.classList.contains('menu-open')));
   document.querySelectorAll('.nav__links a').forEach(a => a.addEventListener('click', () => setMenu(false)));
 
+  // ---------- Efecto de "decodificarse" en los textos ----------
+  // Arranca cada texto en caracteres al azar y los va revelando de
+  // izquierda a derecha hasta el texto real, como si se descifrara.
+  // Espacios, números y signos de puntuación no se scramblean.
+  // Inspirado en lo que probó Bruno, pero con la duración recortada
+  // bastante (acá dura bastante menos que en la idea original).
+  const reduceMotionScramble = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SCRAMBLE_LOWER = 'abcdefghijklmnñopqrstuvwxyz';
+  const SCRAMBLE_UPPER = SCRAMBLE_LOWER.toUpperCase();
+  const LETTER_RE = /[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ]/;
+
+  function scrambleReveal(el, { speed = 12, min = 220, max = 620 } = {}) {
+    if (!el || el.dataset.scrambled) return;
+    el.dataset.scrambled = '1';
+    if (reduceMotionScramble) return;
+
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let node;
+    while ((node = walker.nextNode())) nodes.push({ node, final: node.nodeValue });
+    let letterCount = 0;
+    nodes.forEach(n => { for (const c of n.final) if (LETTER_RE.test(c)) letterCount++; });
+    if (!letterCount) return;
+
+    const duration = Math.min(max, Math.max(min, letterCount * speed));
+    const start = performance.now();
+
+    function frame(now) {
+      const t = Math.min(1, (now - start) / duration);
+      let budget = Math.floor(t * letterCount);
+      nodes.forEach(({ node, final }) => {
+        let out = '';
+        for (const c of final) {
+          if (!LETTER_RE.test(c)) { out += c; continue; }
+          if (budget > 0) { out += c; budget--; }
+          else out += (c === c.toUpperCase() ? SCRAMBLE_UPPER : SCRAMBLE_LOWER)[(Math.random() * SCRAMBLE_LOWER.length) | 0];
+        }
+        node.nodeValue = out;
+      });
+      if (t < 1) requestAnimationFrame(frame);
+      else nodes.forEach(({ node, final }) => { node.nodeValue = final; });
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // Aplica el scramble a los textos "de lectura" adentro de un bloque que
+  // recién entra en pantalla (párrafos, ítems, kickers, subtítulos). Deja
+  // afuera los .title grandes (tienen su propio relleno de color) y los
+  // botones/links sueltos, para no marear la lectura de la home.
+  function scrambleWithin(elOrRoot) {
+    if (!elOrRoot) return;
+    const sel = 'p, li, figcaption, h3, .kicker';
+    const targets = elOrRoot.matches && elOrRoot.matches(sel) ? [elOrRoot] : [...elOrRoot.querySelectorAll(sel)];
+    targets.forEach(t => scrambleReveal(t));
+  }
+
+  if (!reduceMotionScramble) {
+    const scrambleIO = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { scrambleWithin(e.target); scrambleIO.unobserve(e.target); }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('.reveal').forEach(el => scrambleIO.observe(el));
+
+    // El texto del hero ya está a la vista al cargar: no depende de scroll.
+    const heroLead = document.querySelector('.hero__lead');
+    if (heroLead) setTimeout(() => scrambleReveal(heroLead), 300);
+  }
+
   // Aparición atada al scroll, como una película: bajar adelanta la
   // animación, subir la rebobina, y el movimiento pasa mientras el
   // elemento cruza la pantalla (no de golpe al tocar un borde).
