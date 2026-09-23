@@ -459,6 +459,15 @@ body::after {
   .hero::before { background: linear-gradient(180deg, var(--veil-soft), var(--veil) 55%, var(--bg)); }
   .footer__cols { grid-template-columns: 1fr 1fr; }
   .footer__cols > div:first-child { grid-column: 1 / -1; }
+
+  /* El celular tiene bastante menos GPU que una compu: se apagan los
+     efectos más pesados de recalcular en cada frame de scroll (blur,
+     backdrop-filter, blend mode), que eran la causa real del "trabado". */
+  .nav { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .hero__blob { display: none; }
+  body::after { display: none; }
+  .reveal { filter: blur(calc(1.5px * (1 - var(--p)))); }
+  .reveal.flip { filter: blur(calc(1.5px * (1 - var(--p)))); }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
