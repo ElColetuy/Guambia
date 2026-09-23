@@ -88,6 +88,7 @@
 
   // Foto y contenido del hero se mueven distinto al de scrollear (parallax + nav que se contrae)
   const heroBg = document.querySelector('.hero__bg');
+  const heroFg = document.querySelector('.hero__fg');
   const heroInner = document.querySelector('.hero__inner');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const heroHeight = () => (document.querySelector('.hero')?.offsetHeight || window.innerHeight);
@@ -109,6 +110,13 @@
 
         if (!reduceMotion && heroBg) {
           heroBg.style.setProperty('--py', `${Math.min(y, 1000) * 0.25}px`);
+        }
+        if (!reduceMotion && heroFg) {
+          // Se mueve más rápido y se agranda más que el fondo: da la
+          // sensación de que el primer plano avanza hacia la cámara.
+          const yf = Math.min(y, 900);
+          heroFg.style.setProperty('--pyf', `${yf * 0.42}px`);
+          heroFg.style.setProperty('--sf', `${1 + yf * 0.00038}`);
         }
         if (!reduceMotion && heroInner) {
           const fade = Math.max(1 - y / (heroHeight() * 0.75), 0);
