@@ -43,10 +43,14 @@
     const mapLine = document.querySelector('.map__line');
 
     // Progreso 0→1 según cuánto del elemento ya cruzó la pantalla:
-    // 0 = recién asoma por abajo, 1 = ya entró del todo (con margen).
+    // 0 = recién asoma por abajo, 1 = ya entró del todo. El rango es
+    // más largo que el elemento en sí (55% del alto+viewport) para que
+    // la animación se note mientras el elemento está en pantalla, no
+    // solo en el instante en que cruza el borde. Mismo criterio que el
+    // animation-range del CSS (entry 0% cover 55%).
     const progressOf = el => {
       const r = el.getBoundingClientRect();
-      const span = r.height + window.innerHeight * 0.35;
+      const span = (r.height + window.innerHeight) * 0.55;
       const raw = (window.innerHeight - r.top) / span;
       return Math.max(0, Math.min(1, raw));
     };

@@ -366,12 +366,12 @@ p { margin: 0 0 1em; }
 
 @supports (animation-timeline: view()) {
   .reveal {
-    animation: reveal-scrub linear both; animation-timeline: view(); animation-range: entry;
+    animation: reveal-scrub linear both; animation-timeline: view(); animation-range: entry 0% cover 55%;
   }
   @keyframes reveal-scrub {
     from { --p: 0; } to { --p: 1; }
   }
-  .map__line { animation: map-draw-scrub linear both; animation-timeline: view(); animation-range: entry; }
+  .map__line { animation: map-draw-scrub linear both; animation-timeline: view(); animation-range: entry 0% cover 55%; }
   @keyframes map-draw-scrub { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
 }
 /* Sin soporte nativo para animation-timeline: view(), main.js calcula
