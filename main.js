@@ -53,13 +53,10 @@
   // botones/links sueltos.
   function scrambleWithin(elOrRoot) {
     if (!elOrRoot) return;
-    const targets = elOrRoot.matches && elOrRoot.matches('p, li, figcaption, h3, .kicker')
+    const targets = elOrRoot.matches && elOrRoot.matches('p, li, figcaption, h3, .kicker, .person__role')
       ? [elOrRoot]
-      : [...elOrRoot.querySelectorAll('p, li, figcaption, h3, .kicker')];
+      : [...elOrRoot.querySelectorAll('p, li, figcaption, h3, .kicker, .person__role')];
     targets.forEach(t => scrambleReveal(t));
-  }
-  function scrambleBatch(list, staggerMs = 100) {
-    list.forEach((el, i) => setTimeout(() => scrambleWithin(el), i * staggerMs));
   }
 
   // HERO: el texto de bajada ya está a la vista al cargar, así que decodifica solo
@@ -102,11 +99,70 @@
   burger.addEventListener('click', () => setMenu(!nav.classList.contains('menu-open')));
   document.querySelectorAll('.nav__links a').forEach(a => a.addEventListener('click', () => setMenu(false)));
 
-  // Aparición al bajar, parallax y relleno de color — con GSAP + ScrollTrigger si están disponibles
+  // Marca en <html> si GSAP no está disponible (CDN caído, red que lo bloquea, etc.),
+  // para que el CSS pueda usar reveals propios donde GSAP normalmente haría de más
+  // (ver .no-gsap .map.is-visible .map__line en styles.css).
+  if (!(window.gsap && window.ScrollTrigger)) root.classList.add('no-gsap');
+
+  // ======================================================================
+  // APARICIÓN AL HACER SCROLL — mecanismo único, en CSS + Intersection
+  // Observer puro, SIN depender de GSAP ni de ningún CDN externo.
+  // (Antes esto vivía adentro del "if (window.gsap)"; si el script de GSAP
+  // no llegaba a cargar — CDN caído, red que lo bloquea, etc. — el sitio
+  // entero se quedaba estático, sin ningún reveal. Ahora esta parte corre
+  // siempre. GSAP, si carga, solo se usa para efectos extra que no dependen
+  // de esto: relleno de color del título, parallax del hero, el skew de
+  // Proyectos y el trazo del mapa — ver más abajo.)
+  // ======================================================================
+  if (reduceMotion) {
+    document.querySelectorAll('.reveal, .person').forEach(el => el.classList.add('is-visible'));
+  } else {
+    // Cascada entre tarjetas de una misma grilla (.cards, .projects): cada hija
+    // recibe su índice en --reveal-i, que .reveal.is-visible usa como
+    // transition-delay (ver styles.css) para que aparezcan una a una.
+    document.querySelectorAll('.cards, .projects').forEach(grid => {
+      [...grid.children].forEach((card, i) => {
+        card.style.setProperty('--reveal-i', i);
+        card.dataset.revealIndex = i;
+      });
+    });
+
+    const revealIO = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const delay = (Number(el.dataset.revealIndex) || 0) * 80;
+        el.classList.add('is-visible');
+        setTimeout(() => scrambleWithin(el), delay);
+        revealIO.unobserve(el);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('.reveal').forEach(el => revealIO.observe(el));
+
+    // EQUIPO: mismo mecanismo (CSS + IO), la foto y el texto de cada persona
+    // se revelan juntos apenas esa tarjeta entra en pantalla.
+    const personIO = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const person = entry.target;
+        person.classList.add('is-visible');
+        setTimeout(() => scrambleWithin(person), 150);
+        personIO.unobserve(person);
+      });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.person').forEach(el => personIO.observe(el));
+  }
+
+  // ---------- Extras solo-GSAP: relleno de color del título, parallax del
+  // hero, skew de Proyectos y trazo del mapa. Si el CDN de GSAP no carga,
+  // esta parte simplemente no corre — el título queda de un solo color fijo,
+  // el mapa se ve ya dibujado y Proyectos no se inclina — nada se rompe ni
+  // queda invisible, porque ninguno de esos estados "de reposo" depende de
+  // que GSAP los toque (ver los valores por defecto en styles.css). ----------
   if (window.gsap && window.ScrollTrigger) {
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1) Texto grande: relleno de color palabra por palabra, según el acento de cada sección
+    // Texto grande: relleno de color palabra por palabra, según el acento de cada sección
     const SECTION_ACCENT = { proyectos: '--red', equipo: '--red', nosotros: '--celeste' };
     document.querySelectorAll('.title').forEach(title => {
       const words = title.textContent.trim().split(/\s+/).map(w => `<span class="word">${w}</span>`).join(' ');
@@ -124,82 +180,16 @@
       }).to(wordEls, { color: accent, duration: .5, stagger: .4, ease: 'none' });
     });
 
-    // Algunos .reveal (.contact__box, .project) tienen su propia transition CSS para el
-    // hover; la apagamos mientras GSAP anima transform/opacity para que no compitan.
-    const animGuard = els => ({
-      onStart: () => els.forEach(el => el.classList.add('is-animating')),
-      onComplete: () => els.forEach(el => el.classList.remove('is-animating')),
-    });
-
-    // 2) Entradas para bloques de texto sueltos (intros, contacto...) y grupos de proyectos.
-    // Una sola vez al entrar en vista; no se revierten al salir (evita el parpadeo de
-    // ir y venir al scrollear de un lado a otro). El título de cada sección ya tiene su
-    // propio reveal (el relleno de color palabra por palabra, más arriba), así que no
-    // lleva además este fade — apilar los dos era ruido, no dos ideas. El texto de cada
-    // bloque decodifica (scramble) al mismo tiempo que aparece.
-    const TEXT_SEL = '.reveal:not(.card):not(.project)';
-    const GROUP_SEL = '.project.reveal';
-
-    if (reduceMotion) {
-      gsap.set(`${TEXT_SEL}, ${GROUP_SEL}`, { opacity: 1, x: 0, y: 0, rotate: 0, scale: 1, filter: 'none' });
-    } else {
-      gsap.set(TEXT_SEL, { opacity: 0, y: 34, scale: .97 });
-      // Tarjetas de proyectos: solo fade-in + translateY, rápido y en cascada muy junta
-      // (ver video de referencia) — sin slide lateral ni rotación.
-      gsap.set(GROUP_SEL, { opacity: 0, y: 30 });
-
-      ScrollTrigger.batch(TEXT_SEL, {
-        start: 'top 88%',
-        onEnter: b => {
-          gsap.to(b, { opacity: 1, y: 0, scale: 1, duration: .9, ease: 'power3.out', stagger: .1, overwrite: true, ...animGuard(b) });
-          scrambleBatch(b);
-        },
-      });
-
-      ScrollTrigger.batch(GROUP_SEL, {
-        start: 'top 90%',
-        onEnter: b => {
-          gsap.to(b, { opacity: 1, y: 0, duration: .45, ease: 'power2.out', stagger: .08, overwrite: true, ...animGuard(b) });
-          scrambleBatch(b, 80);
-        },
-      });
-    }
-
-    // 3) HERO: parallax de fondo + fade/translateY del contenido al abandonar la sección
+    // HERO: parallax de fondo + fade/translateY del contenido al abandonar la sección
     const heroBg = document.querySelector('.hero__bg');
     const heroInner = document.querySelector('.hero__inner');
-    if (heroInner) {
-      if (reduceMotion) {
-        gsap.set(heroInner, { opacity: 1, y: 0 });
-      } else {
-        const heroRange = { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true };
-        if (heroBg) gsap.to(heroBg, { yPercent: 15, ease: 'none', scrollTrigger: { ...heroRange } });
-        gsap.to(heroInner, { opacity: 0, y: -70, ease: 'none', scrollTrigger: { ...heroRange } });
-      }
+    if (heroInner && !reduceMotion) {
+      const heroRange = { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true };
+      if (heroBg) gsap.to(heroBg, { yPercent: 15, ease: 'none', scrollTrigger: { ...heroRange } });
+      gsap.to(heroInner, { opacity: 0, y: -70, ease: 'none', scrollTrigger: { ...heroRange } });
     }
 
-    // 4) SERVICIOS: fade-up leve una sola vez al entrar, alternando el lado de origen.
-    // El bloque de tarjetas queda deliberadamente tranquilo: el momento audaz de esta
-    // página es el skew de Proyectos y el trazo del mapa (ver 5 y 6 más abajo).
-    if (reduceMotion) {
-      gsap.set('.cards .card', { opacity: 1, y: 0, rotate: 0, scale: 1, filter: 'none' });
-    } else {
-      document.querySelectorAll('.cards .card').forEach((card, i) => {
-        const isLeft = i % 2 === 0; // grid de 2 columnas
-        const guard = animGuard([card]);
-        gsap.fromTo(card,
-          { y: 36, opacity: 0, scale: .97, rotate: isLeft ? -1.5 : 1.5 },
-          {
-            y: 0, opacity: 1, scale: 1, rotate: 0, duration: .7, ease: 'power3.out',
-            scrollTrigger: { trigger: card, start: 'top 90%', toggleActions: 'play none none none' },
-            ...guard,
-            onStart: () => { guard.onStart(); scrambleWithin(card); },
-          }
-        );
-      });
-    }
-
-    // 5) PROYECTOS: el grid se inclina según la velocidad del scroll y se endereza solo al frenar
+    // PROYECTOS: el grid se inclina según la velocidad del scroll y se endereza solo al frenar
     if (!reduceMotion) {
       const projectsGrid = document.querySelector('.projects');
       if (projectsGrid) {
@@ -219,7 +209,9 @@
       }
     }
 
-    // 6) NOSOTROS: pin breve + dibujo del contorno del mapa, atado a ese scroll bloqueado
+    // NOSOTROS: pin breve + dibujo del contorno del mapa, atado a ese scroll bloqueado.
+    // Por defecto (CSS) la línea ya está dibujada; acá la ocultamos primero para
+    // poder animar el trazo, y solo lo hacemos si GSAP efectivamente cargó.
     const mapLine = document.querySelector('.map__line');
     if (mapLine) {
       const len = mapLine.getTotalLength();
@@ -239,53 +231,10 @@
       }
     }
 
-    // 7) EQUIPO: fotos con clip-path reveal, seguidas de un fade-in del texto (con scramble)
-    if (reduceMotion) {
-      gsap.set('.avatar', { clipPath: 'inset(0 0 0% 0)' });
-    } else {
-      document.querySelectorAll('.person').forEach(person => {
-        const avatar = person.querySelector('.avatar');
-        const textBits = [person.querySelector('.person__head > div'), ...person.querySelectorAll(':scope > p')].filter(Boolean);
-        gsap.set(avatar, { clipPath: 'inset(0 0 100% 0)' });
-        gsap.set(textBits, { opacity: 0, y: 16 });
-
-        ScrollTrigger.create({
-          trigger: person,
-          start: 'top 85%',
-          once: true,
-          onEnter: () => {
-            gsap.to(avatar, { clipPath: 'inset(0% 0 0% 0)', duration: 1, ease: 'power4.inOut' });
-            gsap.to(textBits, { opacity: 1, y: 0, duration: .7, delay: .3, stagger: .08, ease: 'power2.out' });
-            scrambleReveal(person.querySelector('.person__role'));
-            person.querySelectorAll(':scope > p').forEach(p => scrambleReveal(p));
-          },
-        });
-      });
-    }
-
     // Los web fonts pueden correr el layout después del primer cálculo de ScrollTrigger
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => ScrollTrigger.refresh());
     }
-  } else {
-    // Fallback si el CDN de GSAP no cargó: aparición en cascada vía Intersection Observer.
-    // Las tarjetas de una misma grilla (.cards, .projects) reciben un --reveal-i según su
-    // posición, que .reveal.in usa como transition-delay (ver styles.css) para que aparezcan
-    // una a una en vez de todas juntas.
-    document.querySelectorAll('.cards, .projects').forEach(grid => {
-      [...grid.children].forEach((card, i) => card.style.setProperty('--reveal-i', i));
-    });
-
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('in'); scrambleWithin(e.target); io.unobserve(e.target); }
-      });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-    // El reveal de Equipo (clip-path/opacity) está oculto por CSS, no por .reveal: mostrarlo a mano.
-    document.querySelectorAll('.person .avatar').forEach(el => { el.style.clipPath = 'none'; });
-    document.querySelectorAll('.person__head > div, .person > p').forEach(el => { el.style.opacity = '1'; });
-    document.querySelectorAll('.person__role, .person > p').forEach(el => scrambleReveal(el));
   }
 
   // Link activo en el menú + acento de color por sección

@@ -261,7 +261,9 @@ p { margin: 0 0 1em; }
 .map svg { width: 100%; max-width: 340px; margin: 0 auto; overflow: visible; }
 .map__fill { fill: var(--celeste); transform: translate(-8px, 8px); transition: fill .5s; }
 .map__line { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; stroke-dasharray: 1000; stroke-dashoffset: 1000; }
-.map.in .map__line { animation: draw 2.2s .2s ease forwards; }
+/* Si GSAP no llegó a cargar, el trazo del mapa lo dibuja este keyframe simple en vez
+   del scrub atado al scroll (ver .no-gsap en main.js y el bloque GSAP más abajo). */
+.no-gsap .map.is-visible .map__line { animation: draw 1.4s .1s ease forwards; }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 .map__dot { fill: var(--red); stroke: var(--ink); stroke-width: 2; }
 .map figcaption { font: 500 18px var(--f-ink); text-transform: uppercase; color: var(--red); margin-top: 6px; transform: rotate(-3deg); }
@@ -281,14 +283,19 @@ p { margin: 0 0 1em; }
 }
 .person:hover .avatar { border-radius: 55% 45% 52% 48% / 48% 52% 45% 55%; transform: scale(1.05); }
 .avatar--blue { box-shadow: 3px 3px 0 var(--blue); } .avatar--red { box-shadow: 3px 3px 0 var(--red); }
-.team .person:nth-child(1) { transition-delay: .04s; }
-.team .person:nth-child(2) { transition-delay: .12s; }
 
-/* Estado inicial del reveal de Equipo por CSS (no por JS), para que no haya flash
-   de contenido visible mientras carga el CDN de GSAP. main.js anima desde acá. */
-.person .avatar { clip-path: inset(0 0 100% 0); }
-.person__head > div, .person > p { opacity: 0; }
-/* Fallback sin GSAP: main.js los deja visibles a mano si el CDN no cargó. */
+/* Estado inicial del reveal de Equipo: la foto entra con un clip-path y el texto con
+   un fade+slide leve, juntos, apenas la tarjeta de esa persona entra en pantalla
+   (ver personIO en main.js — no depende de GSAP, corre siempre). */
+.person .avatar { clip-path: inset(0 0 100% 0); transition: clip-path .9s var(--ease-out); }
+.person__head > div, .person > p {
+  opacity: 0; transform: translateY(14px);
+  transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
+}
+.person.is-visible .avatar { clip-path: inset(0% 0 0% 0); }
+.person.is-visible .person__head > div,
+.person.is-visible .person > p { opacity: 1; transform: none; }
+.person > p:nth-of-type(2) { transition-delay: .08s; }
 
 .contact__box {
   background: var(--paper); border: 2px solid var(--ink); border-radius: var(--wobble);
@@ -334,32 +341,24 @@ p { margin: 0 0 1em; }
 .legal__body p { font-size: 17px; color: var(--text); }
 .legal__back { margin-top: 44px; }
 
-/* ---------- Aparición al bajar ---------- */
-/* Sin transition acá: GSAP anima estos elementos a mano (ver main.js). El texto propio
-   de cada bloque decodifica (scramble) por su cuenta, también desde main.js — por eso
-   acá no hay blur: quedaría compitiendo con las letras que están cambiando y se ve sucio.
-   La transition queda en .reveal.in para el fallback sin GSAP/ScrollTrigger. */
-.reveal { opacity: 0; transform: translateY(28px) scale(.98); }
-.reveal.in {
-  opacity: 1; transform: none;
-  transition: opacity .8s var(--ease-out), transform .8s var(--ease-out);
+/* ---------- Aparición al hacer scroll ---------- */
+/* Mecanismo único: CSS + Intersection Observer (ver main.js), sin GSAP de por medio,
+   para que esto funcione siempre, incluso si el CDN de GSAP no llega a cargar.
+   Estado oculto por defecto → .is-visible lo anima. El texto propio de cada bloque
+   decodifica (scramble) al mismo tiempo, también desde main.js. */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity .45s var(--ease-out), transform .45s var(--ease-out);
   /* Cascada entre tarjetas de una misma grilla (.cards, .projects): main.js calcula
-     --reveal-i según la posición de cada una. Sin GSAP, este delay es lo único que
-     produce el efecto "una a una" (ver fallback de IntersectionObserver en main.js). */
-  transition-delay: calc(var(--reveal-i, 0) * .12s);
+     --reveal-i según la posición de cada una, y ese delay es lo que produce el efecto
+     "una a una" en vez de todas juntas. */
+  transition-delay: calc(var(--reveal-i, 0) * .08s);
 }
-
-/* Tarjetas de proyectos: fade + translateY puro, más rápido y con cascada más apretada
-   que el resto de los .reveal (ver equivalente en GSAP, main.js GROUP_SEL). */
-.projects .project.reveal { transform: translateY(30px); }
-.projects .project.reveal.in { transition-duration: .45s; transition-delay: calc(var(--reveal-i, 0) * .08s); }
+.reveal.is-visible { opacity: 1; transform: none; }
 
 /* ---------- Relleno de color del texto grande, atado al scroll ---------- */
 .title .word { color: color-mix(in srgb, var(--ink) 22%, transparent); }
-
-/* Mientras GSAP anima transform/opacity acá, apaga cualquier transition CSS propia
-   del elemento (hover de .card/.project/.person/.contact__box) para que no compitan. */
-.is-animating { transition: none; }
 
 .projects { will-change: transform; }
 .avatar { will-change: clip-path; }
@@ -384,13 +383,13 @@ p { margin: 0 0 1em; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; filter: none; transition: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
   .map__line { stroke-dashoffset: 0; animation: none !important; }
   .hero__title img { animation: none; }
   .hero__blob { animation: none !important; }
   .card:hover, .project:hover, .person:hover, .values li:hover, .ink-btn:hover { transform: none; }
   :root { transition: none; }
   .progress-bar { animation: none !important; transform: none !important; }
-  .person .avatar { clip-path: none; }
-  .person__head > div, .person > p { opacity: 1; }
+  .person .avatar { clip-path: none; transition: none; }
+  .person__head > div, .person > p { opacity: 1; transform: none; transition: none; }
 }
