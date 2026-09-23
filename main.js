@@ -116,7 +116,7 @@
           // sensación de que el primer plano avanza hacia la cámara.
           const yf = Math.min(y, 900);
           heroFg.style.setProperty('--pyf', `${yf * 0.42}px`);
-          heroFg.style.setProperty('--sf', `${1 + yf * 0.00038}`);
+          heroFg.style.setProperty('--sf', `${1.18 + yf * 0.00042}`);
         }
         if (!reduceMotion && heroInner) {
           const fade = Math.max(1 - y / (heroHeight() * 0.75), 0);
