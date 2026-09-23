@@ -90,6 +90,7 @@
   const heroBg = document.querySelector('.hero__bg');
   const heroFg = document.querySelector('.hero__fg');
   const heroInner = document.querySelector('.hero__inner');
+  const heroLogo = document.querySelector('.hero__title');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const heroHeight = () => (document.querySelector('.hero')?.offsetHeight || window.innerHeight);
 
@@ -125,6 +126,12 @@
           const fade = Math.max(1 - y / (heroHeight() * 0.75), 0);
           heroInner.style.opacity = fade;
           heroInner.style.transform = `translateY(${Math.min(y * 0.18, 70)}px)`;
+        }
+        if (!reduceMotion && heroLogo) {
+          // El logo se corre hacia la izquierda al bajar, y vuelve solo a
+          // su lugar al subir (es una función directa de "y", no un
+          // interruptor: por eso se deshace solo, como todo lo demás).
+          heroLogo.style.transform = `translateX(${-Math.min(y, 500) * 0.16}px)`;
         }
         if (needsProgressFallback) {
           const max = document.documentElement.scrollHeight - window.innerHeight;
