@@ -161,16 +161,19 @@ p { margin: 0 0 1em; }
   filter: blur(2px) saturate(.95);
   transform: translateY(var(--py, 0));
 }
-/* Misma foto, sin cielo (transparente), sin desenfoque: se ve "más
-   adelante" que el fondo difuminado, y al scrollear se agranda y se
-   mueve más rápido que el fondo, como si avanzara hacia la cámara —
-   el hueco del cielo deja ver el fondo borroso detrás, dando profundidad. */
+/* Misma foto, sin cielo (transparente), casi sin desenfoque: se ve
+   "más adelante" que el fondo difuminado, y al scrollear crece (más
+   que se mueve), como si avanzara hacia la cámara. El borde donde
+   estaba el cielo se difumina con una máscara para que se mezcle con
+   el fondo borroso en vez de cortar en seco. */
 .hero__fg {
-  position: absolute; inset: -260px -30px -30px -30px; z-index: -2;
-  background: url('assets/rambla-fg.webp') center 68% / cover no-repeat;
-  filter: saturate(1.05);
-  transform: translateY(var(--pyf, 0)) scale(var(--sf, 1.18));
+  position: absolute; inset: -90px -30px -30px -30px; z-index: -2;
+  background: url('assets/rambla-fg.webp') center 62% / cover no-repeat;
+  filter: saturate(1.25) contrast(1.1) brightness(1.04) blur(.4px);
+  transform: translateY(var(--pyf, 0)) scale(var(--sf, 1.06));
   transform-origin: 50% 100%;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%);
+          mask-image: linear-gradient(to bottom, transparent, #000 22%);
 }
 .hero::before {
   content: ''; position: absolute; inset: 0; z-index: -1;

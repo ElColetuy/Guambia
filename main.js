@@ -115,8 +115,11 @@
           // Se mueve más rápido y se agranda más que el fondo: da la
           // sensación de que el primer plano avanza hacia la cámara.
           const yf = Math.min(y, 900);
-          heroFg.style.setProperty('--pyf', `${yf * 0.42}px`);
-          heroFg.style.setProperty('--sf', `${1.18 + yf * 0.00042}`);
+          // El movimiento es chico a propósito (menos que el overscan del
+          // CSS) para que nunca se abra un hueco arriba; el "avance" lo da
+          // sobre todo el agrandado (scale), que sí puede crecer libre.
+          heroFg.style.setProperty('--pyf', `${yf * 0.06}px`);
+          heroFg.style.setProperty('--sf', `${1.06 + yf * 0.0005}`);
         }
         if (!reduceMotion && heroInner) {
           const fade = Math.max(1 - y / (heroHeight() * 0.75), 0);
