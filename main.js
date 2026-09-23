@@ -47,10 +47,10 @@
     // más largo que el elemento en sí (55% del alto+viewport) para que
     // la animación se note mientras el elemento está en pantalla, no
     // solo en el instante en que cruza el borde. Mismo criterio que el
-    // animation-range del CSS (entry 0% cover 55%).
+    // animation-range del CSS (entry 0% cover 38%).
     const progressOf = el => {
       const r = el.getBoundingClientRect();
-      const span = (r.height + window.innerHeight) * 0.55;
+      const span = (r.height + window.innerHeight) * 0.38;
       const raw = (window.innerHeight - r.top) / span;
       return Math.max(0, Math.min(1, raw));
     };
@@ -61,7 +61,7 @@
       revealTicking = true;
       requestAnimationFrame(() => {
         revealEls.forEach(el => el.style.setProperty('--p', progressOf(el).toFixed(3)));
-        if (mapEl && mapLine) mapLine.style.strokeDashoffset = String(1000 * (1 - progressOf(mapEl)));
+        if (mapEl && mapLine) mapLine.style.strokeDashoffset = String(700 * (1 - progressOf(mapEl)));
         revealTicking = false;
       });
     };
