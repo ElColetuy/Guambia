@@ -28,38 +28,9 @@
   burger.addEventListener('click', () => setMenu(!nav.classList.contains('menu-open')));
   document.querySelectorAll('.nav__links a').forEach(a => a.addEventListener('click', () => setMenu(false)));
 
-  // ---------- Cursor propio (solo con mouse de verdad, no en celular/tablet) ----------
-  // Un puntito pegado al cursor y un aro que lo sigue con un poco de
-  // retraso; los dos crecen sobre botones, tarjetas y links.
+  // Botones con tirón magnético: se corren un poco hacia el mouse
+  // (solo con mouse de verdad, no en celular/tablet).
   if (pointerFine && !reduceMotion) {
-    const dot = document.createElement('div'); dot.className = 'cursor-dot'; dot.setAttribute('aria-hidden', 'true');
-    const ring = document.createElement('div'); ring.className = 'cursor-ring'; ring.setAttribute('aria-hidden', 'true');
-    document.body.append(dot, ring);
-    document.body.classList.add('has-cursor');
-
-    let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my, seen = false;
-    window.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      dot.style.transform = `translate(${mx}px, ${my}px)`;
-      if (!seen) { seen = true; ring.style.transform = `translate(${mx}px, ${my}px)`; rx = mx; ry = my; document.body.classList.add('cursor-visible'); }
-    }, { passive: true });
-    document.addEventListener('mouseleave', () => document.body.classList.remove('cursor-visible'));
-    document.addEventListener('mouseenter', () => document.body.classList.add('cursor-visible'));
-
-    const ringTick = () => {
-      rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
-      ring.style.transform = `translate(${rx}px, ${ry}px)`;
-      requestAnimationFrame(ringTick);
-    };
-    requestAnimationFrame(ringTick);
-
-    const HOVER_SEL = 'a, button, .card, .project, .person, .values li, input, textarea, select';
-    document.addEventListener('mouseover', e => { if (e.target.closest(HOVER_SEL)) document.body.classList.add('cursor-hover'); });
-    document.addEventListener('mouseout', e => { if (e.target.closest(HOVER_SEL)) document.body.classList.remove('cursor-hover'); });
-    document.addEventListener('mousedown', () => document.body.classList.add('cursor-down'));
-    document.addEventListener('mouseup', () => document.body.classList.remove('cursor-down'));
-
-    // Botones con tirón magnético: se corren un poco hacia el mouse.
     document.querySelectorAll('.ink-btn').forEach(btn => {
       btn.addEventListener('mousemove', e => {
         const r = btn.getBoundingClientRect();
