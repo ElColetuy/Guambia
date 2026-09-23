@@ -349,7 +349,7 @@ p { margin: 0 0 1em; }
   transition: opacity .8s var(--ease-out), transform .9s var(--ease-spring), filter .8s var(--ease-out);
 }
 .reveal.flip.in { transform: none; filter: blur(0); }
-.projects .project:nth-child(odd).reveal.flip { transform-origin: 80% 50%; transform: translateY(36px) rotateY(70deg) scale(.92); }
+.projects .project:nth-child(odd).reveal.flip:not(.in) { transform-origin: 80% 50%; transform: translateY(36px) rotateY(70deg) scale(.92); }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1020px) {
