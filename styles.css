@@ -111,21 +111,21 @@ p { margin: 0 0 1em; }
 .ink-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: .5em;
   font: 700 15px/1 var(--f-body); letter-spacing: .02em; text-transform: uppercase;
-  color: #0E1636; background: var(--paper); cursor: pointer;
+  color: #0E1636; background: var(--paper); cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
   padding: 14px 22px; border: 2px solid var(--ink); border-radius: var(--wobble);
-  box-shadow: 0 1px 0 rgba(var(--shadow-tint), .4), 0 10px 24px -12px rgba(var(--shadow-tint), .45);
-  transition: transform .3s var(--ease-spring), box-shadow .3s var(--ease-out), border-radius .5s var(--ease-out), background-color .3s;
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform .14s ease-out, box-shadow .14s ease-out, background-color .2s;
 }
 :root[data-theme="dark"] .ink-btn:not(.ink-btn--blue):not(.ink-btn--red):not(.ink-btn--icon) { color: var(--ink); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ink-btn:not(.ink-btn--blue):not(.ink-btn--red):not(.ink-btn--icon) { color: var(--ink); } }
-.ink-btn:hover {
-  transform: translateY(-3px);
-  border-radius: var(--wobble-hover);
-  box-shadow: 0 1px 0 rgba(var(--shadow-tint), .4), 0 14px 24px -14px rgba(var(--shadow-tint), .5);
-}
-.ink-btn:active { transform: translateY(0) scale(.97); box-shadow: 0 1px 0 rgba(var(--shadow-tint), .3); }
+.ink-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); background-color: color-mix(in srgb, var(--paper) 70%, var(--celeste)); }
+.ink-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink); transition-duration: .05s; }
+.ink-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .ink-btn--blue { background: var(--celeste); }
+.ink-btn--blue:hover { background-color: color-mix(in srgb, var(--celeste) 65%, var(--blue)); }
 .ink-btn--red { background: var(--red-soft); }
+.ink-btn--red:hover { background-color: color-mix(in srgb, var(--red-soft) 65%, var(--red)); }
+.ink-btn--icon:hover { background-color: color-mix(in srgb, var(--celeste) 65%, var(--blue)); }
 .ink-btn--icon { width: 40px; height: 40px; padding: 0; font: 18px/1 system-ui, sans-serif; background: var(--celeste); color: #0E1636; }
 
 .ink-link { font-weight: 700; border-bottom: 2px solid var(--accent); padding-bottom: 1px; transition: color .3s, border-color .3s; }
@@ -168,9 +168,9 @@ p { margin: 0 0 1em; }
 .hero__bg {
   position: absolute; inset: -30px; z-index: -3;
   background: url('assets/rambla.jpg') center 62% / cover no-repeat;
-  filter: blur(2px) saturate(1.15) hue-rotate(0deg);
-  transform: translateY(var(--py, 0));
-  animation: bg-hue 14s linear infinite;
+  filter: blur(2px) saturate(1.6) hue-rotate(0deg);
+  will-change: transform, filter;
+  animation: bg-hue 7s linear infinite;
 }
 /* Misma foto, sin cielo (transparente), casi sin desenfoque: se ve
    "más adelante" que el fondo difuminado, y al scrollear crece (más
@@ -179,7 +179,8 @@ p { margin: 0 0 1em; }
    el fondo borroso en vez de cortar en seco. */
 .hero__fg {
   position: absolute; inset: -90px -30px -30px -30px; z-index: -2; overflow: hidden;
-  transform: translateY(var(--pyf, 0)) scale(var(--sf, 1.06));
+  transform: translate3d(0, 0, 0) scale(1.06);
+  will-change: transform;
   transform-origin: 50% 100%;
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%);
           mask-image: linear-gradient(to bottom, transparent, #000 22%);
@@ -203,8 +204,8 @@ p { margin: 0 0 1em; }
 .hero__blob--2 { width: 320px; height: 320px; bottom: -120px; left: 8%; background: radial-gradient(circle, var(--red-soft), transparent 70%); opacity: .5; animation: blob-drift 27s ease-in-out infinite reverse; }
 .hero__blob--3 { width: 260px; height: 260px; top: 32%; left: -120px; background: radial-gradient(circle, var(--celeste), transparent 70%); opacity: .55; animation: blob-drift 31s ease-in-out infinite; }
 @keyframes bg-hue {
-  from { filter: blur(2px) saturate(1.15) hue-rotate(0deg); }
-  to { filter: blur(2px) saturate(1.15) hue-rotate(360deg); }
+  from { filter: blur(2px) saturate(1.6) hue-rotate(0deg); }
+  to { filter: blur(2px) saturate(1.6) hue-rotate(360deg); }
 }
 @keyframes blob-drift {
   0%, 100% { transform: translate(0, 0) scale(1); }
@@ -414,13 +415,25 @@ p { margin: 0 0 1em; }
 
 @supports (animation-timeline: view()) {
   .reveal {
-    animation: reveal-scrub linear both; animation-timeline: view(); animation-range: entry 0% cover 38%;
+    opacity: 1; transform: none;
+    animation: reveal-scrub linear backwards; animation-timeline: view(); animation-range: entry 0% cover 38%;
   }
+  .reveal.flip { transform: none; animation-name: reveal-flip; }
   @keyframes reveal-scrub {
-    from { --p: 0; } to { --p: 1; }
+    from { opacity: 0; transform: translateY(28px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
+  @keyframes reveal-flip {
+    from { opacity: 0; transform: translateY(36px) rotateY(calc(70deg * var(--rp))) scale(.92); }
+    to { opacity: 1; transform: translateY(0) rotateY(0deg) scale(1); }
+  }
+  .avatar, .project__shot img { clip-path: none; }
   .map__line { animation: map-draw-scrub linear both; animation-timeline: view(); animation-range: entry 0% cover 38%; }
   @keyframes map-draw-scrub { from { stroke-dashoffset: 700; } to { stroke-dashoffset: 0; } }
+  @media (min-width: 861px) {
+    .project__shot img { animation: curtain linear backwards; animation-timeline: view(); animation-range: entry 0% cover 38%; }
+    @keyframes curtain { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+  }
 }
 /* Sin soporte nativo para animation-timeline: view(), main.js calcula
    --p a mano en cada scroll y mueve el trazo del mapa directo por JS. */
@@ -459,6 +472,10 @@ p { margin: 0 0 1em; }
      backdrop-filter, blend mode), que eran la causa real del "trabado". */
   .nav { backdrop-filter: none; -webkit-backdrop-filter: none; }
   .hero__blob { display: none; }
+  .hero__bg { filter: saturate(1.6) hue-rotate(0deg); animation-name: bg-hue-m; animation-duration: 6s; }
+  @keyframes bg-hue-m { from { filter: saturate(1.6) hue-rotate(0deg); } to { filter: saturate(1.6) hue-rotate(360deg); } }
+  .hero__fg__img { filter: saturate(1.3) contrast(1.1); }
+  .avatar, .title::after, .map figcaption, .kicker::before { animation: none; }
 }
 
 /* ---------- Más vida en lo que ya existe (solo transform/opacity: fluido) ---------- */
@@ -477,7 +494,6 @@ p { margin: 0 0 1em; }
 .avatar { animation: bob 5s ease-in-out infinite; }
 .person:nth-child(2) .avatar { animation-delay: -2.5s; }
 .project h3 .arrow { animation: nudge 2.2s ease-in-out infinite; }
-.hero__ctas .ink-btn:first-child { animation: btn-breathe 3.2s ease-in-out infinite; }
 .nav__logo img { transform-origin: 50% 60%; }
 .card h3, .project h3 { transition: color .35s, letter-spacing .4s var(--ease-out); }
 .card:hover h3, .project:hover h3 { color: var(--accent); letter-spacing: .035em; }
@@ -490,7 +506,7 @@ p { margin: 0 0 1em; }
   .map__line { stroke-dashoffset: 0; animation: none !important; }
   .map__dot { animation: none !important; }
   .hero__title img { animation: none; }
-  .hero__blob, .hero__bg, .kicker::before, .title::after, .values li, .avatar, .project h3 .arrow, .hero__ctas .ink-btn, .map figcaption { animation: none !important; }
+  .hero__blob, .hero__bg, .kicker::before, .title::after, .values li, .avatar, .project h3 .arrow, .map figcaption { animation: none !important; }
   .card:hover, .project:hover, .person:hover, .values li:hover, .ink-btn:hover { transform: none; }
   :root { transition: none; }
   .progress-bar { animation: none !important; transform: none !important; }

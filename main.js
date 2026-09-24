@@ -3,7 +3,6 @@
   const nav = document.querySelector('.nav');
   const themeBtn = document.getElementById('themeToggle');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const pointerFine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   // Modo claro / oscuro
   const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -27,86 +26,6 @@
   };
   burger.addEventListener('click', () => setMenu(!nav.classList.contains('menu-open')));
   document.querySelectorAll('.nav__links a').forEach(a => a.addEventListener('click', () => setMenu(false)));
-
-  // Botones con tirón magnético: se corren un poco hacia el mouse
-  // (solo con mouse de verdad, no en celular/tablet).
-  if (pointerFine && !reduceMotion) {
-    document.querySelectorAll('.ink-btn').forEach(btn => {
-      btn.addEventListener('mousemove', e => {
-        const r = btn.getBoundingClientRect();
-        const mx2 = e.clientX - r.left - r.width / 2;
-        const my2 = e.clientY - r.top - r.height / 2;
-        btn.style.transform = `translate(${mx2 * 0.22}px, ${my2 * 0.32 - 2}px)`;
-      });
-      btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
-    });
-  }
-
-  // ---------- Efecto de "decodificarse" en los textos ----------
-  // Arranca cada texto en caracteres al azar y los va revelando de
-  // izquierda a derecha hasta el texto real, como si se descifrara.
-  // Espacios, números y signos de puntuación no se scramblean.
-  const SCRAMBLE_LOWER = 'abcdefghijklmnñopqrstuvwxyz';
-  const SCRAMBLE_UPPER = SCRAMBLE_LOWER.toUpperCase();
-  const LETTER_RE = /[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ]/;
-
-  function scrambleReveal(el, { speed = 6, min = 110, max = 320 } = {}) {
-    if (!el || el.dataset.scrambled) return;
-    el.dataset.scrambled = '1';
-    if (reduceMotion) return;
-
-    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-    const nodes = [];
-    let node;
-    while ((node = walker.nextNode())) nodes.push({ node, final: node.nodeValue });
-    let letterCount = 0;
-    nodes.forEach(n => { for (const c of n.final) if (LETTER_RE.test(c)) letterCount++; });
-    if (!letterCount) return;
-
-    const duration = Math.min(max, Math.max(min, letterCount * speed));
-    const start = performance.now();
-
-    function frame(now) {
-      const t = Math.min(1, (now - start) / duration);
-      let budget = Math.floor(t * letterCount);
-      nodes.forEach(({ node, final }) => {
-        let out = '';
-        for (const c of final) {
-          if (!LETTER_RE.test(c)) { out += c; continue; }
-          if (budget > 0) { out += c; budget--; }
-          else out += (c === c.toUpperCase() ? SCRAMBLE_UPPER : SCRAMBLE_LOWER)[(Math.random() * SCRAMBLE_LOWER.length) | 0];
-        }
-        node.nodeValue = out;
-      });
-      if (t < 1) requestAnimationFrame(frame);
-      else nodes.forEach(({ node, final }) => { node.nodeValue = final; });
-    }
-    requestAnimationFrame(frame);
-  }
-
-  // Aplica el scramble a los textos "de lectura" adentro de un bloque que
-  // recién entra en pantalla (párrafos, ítems, kickers, subtítulos). Deja
-  // afuera los .title grandes (tienen su propio relleno de color) y los
-  // botones/links sueltos, para no marear la lectura de la home.
-  function scrambleWithin(elOrRoot) {
-    if (!elOrRoot) return;
-    const sel = 'p, li, figcaption, h3, .kicker';
-    const targets = elOrRoot.matches && elOrRoot.matches(sel) ? [elOrRoot] : [...elOrRoot.querySelectorAll(sel)];
-    targets.forEach(t => scrambleReveal(t));
-  }
-
-  if (!reduceMotion) {
-    const scrambleIO = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { scrambleWithin(e.target); scrambleIO.unobserve(e.target); }
-      });
-    }, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
-    document.querySelectorAll('.reveal').forEach(el => scrambleIO.observe(el));
-
-    // El texto del hero ya está a la vista al cargar: no depende de scroll.
-    const heroLead = document.querySelector('.hero__lead');
-    if (heroLead) setTimeout(() => scrambleReveal(heroLead), 250);
-  }
 
   // Aparición atada al scroll, como una película: bajar adelanta la
   // animación, subir la rebobina, y el movimiento pasa mientras el
@@ -243,25 +162,24 @@
 
         if (heroActive) {
           if (!reduceMotion && heroBg) {
-            heroBg.style.setProperty('--py', `${Math.min(y, 1000) * 0.25}px`);
+            heroBg.style.transform = `translate3d(0, ${Math.min(y, 1000) * 0.25}px, 0)`;
           }
           if (!reduceMotion && heroFg) {
             // Se mueve más rápido y se agranda más que el fondo: da la
             // sensación de que el primer plano avanza hacia la cámara.
             const yf = Math.min(y, 900);
-            heroFg.style.setProperty('--pyf', `${yf * 0.09}px`);
-            heroFg.style.setProperty('--sf', `${1.06 + yf * 0.0005}`);
+            heroFg.style.transform = `translate3d(0, ${yf * 0.09}px, 0) scale(${1.06 + yf * 0.0005})`;
           }
           if (!reduceMotion && heroInner) {
             const fade = Math.max(1 - y / (heroH * 0.75), 0);
             heroInner.style.opacity = fade;
-            heroInner.style.transform = `translateY(${Math.min(y * 0.18, 70)}px)`;
+            heroInner.style.transform = `translate3d(0, ${Math.min(y * 0.18, 70)}px, 0)`;
           }
           if (!reduceMotion && heroLogo) {
             // El logo se corre hacia la izquierda al bajar, y vuelve solo a
             // su lugar al subir (es una función directa de "y", no un
             // interruptor: por eso se deshace solo, como todo lo demás).
-            heroLogo.style.transform = `translateX(${-Math.min(y, 500) * 0.16}px)`;
+            heroLogo.style.transform = `translate3d(${-Math.min(y, 500) * 0.16}px, 0, 0)`;
           }
         }
 
