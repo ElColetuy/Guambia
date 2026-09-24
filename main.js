@@ -84,6 +84,16 @@
     updateReveal();
   }
 
+  // Tocar el logo del hero: da una vuelta de 360° sobre sí mismo, en 3D
+  const logoImg = document.querySelector('.hero__title img');
+  if (logoImg && !reduceMotion) {
+    logoImg.addEventListener('click', () => {
+      if (logoImg.classList.contains('spin')) return;
+      logoImg.classList.add('spin');
+      logoImg.addEventListener('animationend', () => logoImg.classList.remove('spin'), { once: true });
+    });
+  }
+
   // Link activo en el menú + acento de color por sección
   const links = [...document.querySelectorAll('.nav__links a')];
   const spy = new IntersectionObserver(entries => {

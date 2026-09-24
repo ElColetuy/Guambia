@@ -200,6 +200,12 @@ p { margin: 0 0 1em; }
 .hero__title img {
   width: 100%; max-width: 560px; height: auto; margin-left: -10px;
 }
+.hero__title img { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.hero__title img.spin { animation: spin3d .9s cubic-bezier(.45, .05, .25, 1); }
+@keyframes spin3d {
+  from { transform: perspective(900px) rotateY(0deg); }
+  to { transform: perspective(900px) rotateY(360deg); }
+}
 .hero__lead { font-size: clamp(18px, 1.6vw, 21px); color: var(--text); max-width: 34ch; margin-bottom: 30px; }
 .hero__ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 20px; }
 
