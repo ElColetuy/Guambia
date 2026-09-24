@@ -169,7 +169,7 @@
           if (!heroActive) {
             // Se sale del hero: deja los estilos en su estado final en vez
             // de a mitad de animación, y no los vuelve a tocar hasta volver.
-            if (heroInner) { heroInner.style.opacity = 0; }
+            if (heroInner && !mobileView.matches) { heroInner.style.opacity = 0; }
           }
         }
 
