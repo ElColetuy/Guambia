@@ -121,6 +121,7 @@
   const heroInner = document.querySelector('.hero__inner');
   const heroLogo = document.querySelector('.hero__title');
   let heroH = heroEl?.offsetHeight || window.innerHeight;
+  const mobileView = window.matchMedia('(max-width: 860px)');
   let heroActive = true;
   const remeasureHero = () => { heroH = heroEl?.offsetHeight || window.innerHeight; };
   window.addEventListener('resize', remeasureHero);
@@ -160,7 +161,7 @@
           }
         }
 
-        if (heroActive) {
+        if (heroActive && !mobileView.matches) {
           if (!reduceMotion && heroBg) {
             heroBg.style.transform = `translate3d(0, ${Math.min(y, 1000) * 0.25}px, 0)`;
           }
