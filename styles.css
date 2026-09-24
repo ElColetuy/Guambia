@@ -246,45 +246,55 @@ p { margin: 0 0 1em; }
 .cards .card:nth-child(3) { transition-delay: .14s; }
 .cards .card:nth-child(4) { transition-delay: .2s; }
 
-/* Proyectos */
-.projects { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
-.project {
-  display: block; background: var(--paper); border: 2px solid var(--ink); border-radius: var(--wobble);
+/* ---------- Tira de proyectos: carrusel de tarjetas que gira solo, sin scroll manual ----------
+   Dos copias idénticas del listado (.ticker__group) puestas una al lado de la
+   otra: la animación mueve el track exactamente el ancho de una copia
+   (-50%), así el loop no se nota. Gira siempre por sí sola (no depende de
+   "reducir movimiento": es decorativa, no hay contenido único atrapado
+   adentro) y se pausa solo mientras el mouse está encima para poder leer
+   una tarjeta. No hay overflow-x ni scrollbar: el contenedor solo recorta. */
+.ticker {
+  position: relative; margin: 4px 0 46px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+}
+.ticker__track { display: flex; width: max-content; animation: ticker-scroll 24s linear infinite; }
+.ticker:hover .ticker__track { animation-play-state: paused; }
+@keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.ticker__group { display: flex; gap: 22px; padding-right: 22px; flex: none; }
+
+.ticker__card {
+  --glow: var(--blue);
+  display: block; flex: none; width: min(300px, 76vw);
+  background: var(--paper); border: 2px solid var(--ink); border-radius: var(--wobble);
   box-shadow: 5px 5px 0 var(--ink); overflow: hidden;
-  transition: transform .45s var(--ease-spring), box-shadow .35s var(--ease-out), border-radius .5s var(--ease-out);
+  transition: transform .4s var(--ease-spring), box-shadow .35s var(--ease-out), border-color .3s, border-radius .5s var(--ease-out);
 }
-.project:hover { transform: translateY(-8px) rotate(.4deg); border-radius: var(--wobble-hover); box-shadow: 9px 12px 0 var(--ink); }
-.project:nth-child(3n+2) { box-shadow: 5px 5px 0 var(--blue); } .project:nth-child(3n+2):hover { box-shadow: 9px 12px 0 var(--blue); }
-.project:nth-child(3n+3) { box-shadow: 5px 5px 0 var(--red); } .project:nth-child(3n+3):hover { box-shadow: 9px 12px 0 var(--red); }
-.project__shot { aspect-ratio: 800 / 520; overflow: hidden; border-bottom: 2px solid var(--ink); background: #EEF0EC; }
-.project__shot img {
-  width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s var(--ease-out);
-  clip-path: inset(0 0 calc(100% * (1 - var(--p, 1))) 0);
+.ticker__group .ticker__card:nth-child(3n+2) { --glow: var(--blue); }
+.ticker__group .ticker__card:nth-child(3n+3) { --glow: var(--red); }
+.ticker__card:hover {
+  transform: translateY(-8px) rotate(-.4deg); border-radius: var(--wobble-hover); border-color: var(--glow);
+  box-shadow: 5px 5px 0 var(--ink), 0 0 0 3px color-mix(in srgb, var(--glow) 55%, transparent), 0 0 30px 6px color-mix(in srgb, var(--glow) 55%, transparent);
 }
-.project:hover .project__shot img { transform: scale(1.08); }
-.project__shot--logo { display: grid; place-items: center; background: #fff; padding: 30px; }
-.project__shot--logo img { width: 100%; height: 100%; object-fit: contain; }
-.project__shot--placeholder {
-  display: grid; place-items: center; font: 500 20px var(--f-ink); text-transform: uppercase;
-  letter-spacing: .04em; color: var(--muted); background: repeating-linear-gradient(-45deg, var(--bg-alt), var(--bg-alt) 10px, var(--paper) 10px, var(--paper) 20px);
+.ticker__shot { aspect-ratio: 800 / 520; overflow: hidden; border-bottom: 2px solid var(--ink); background: #EEF0EC; }
+.ticker__shot img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s var(--ease-out); }
+.ticker__card:hover .ticker__shot img { transform: scale(1.08); }
+.ticker__shot--logo { display: grid; place-items: center; background: #fff; padding: 24px; }
+.ticker__shot--logo img { width: 100%; height: 100%; object-fit: contain; }
+.ticker__card .kicker, .ticker__card h3, .ticker__card > p { padding-inline: 18px; }
+.ticker__card .kicker { margin-top: 16px; }
+.ticker__card h3 {
+  font: 600 22px/1.1 var(--f-ink); text-transform: uppercase; color: var(--ink); margin: 0 0 8px;
+  letter-spacing: .02em; display: flex; align-items: center; gap: 8px; transition: color .3s;
 }
-.project .kicker, .project h3, .project > p { padding-inline: 22px; }
-.project .kicker { margin-top: 20px; }
-.project h3 {
-  font: 600 26px/1.1 var(--f-ink); text-transform: uppercase; color: var(--ink); margin: 0 0 10px;
-  letter-spacing: .02em; display: flex; align-items: center; gap: 8px;
+.ticker__card:hover h3 { color: var(--glow); }
+.ticker__card h3 .arrow { font-size: 16px; display: inline-block; transition: transform .3s var(--ease-spring); }
+.ticker__card:hover h3 .arrow { transform: translate(3px, -3px); }
+.ticker__card > p:last-child { margin: 0 0 18px; color: var(--text); font-size: 14.5px; line-height: 1.5; }
+@media (max-width: 860px) {
+  .ticker { margin-bottom: 36px; }
+  .ticker__track { animation-duration: 16s; }
 }
-.project h3 .arrow { font-size: 18px; display: inline-block; transition: transform .3s var(--ease-spring); }
-.project:hover h3 .arrow { transform: translate(3px, -3px); }
-.project > p:last-child { margin: 0 0 22px; color: var(--text); font-size: 15.5px; }
-.project--soon .kicker, .project--soon h3, .project--soon > p { opacity: .7; }
-.projects .project:nth-child(1) { transition-delay: .02s; }
-.projects .project:nth-child(2) { transition-delay: .06s; }
-.projects .project:nth-child(3) { transition-delay: .1s; }
-.projects .project:nth-child(4) { transition-delay: .14s; }
-.projects .project:nth-child(5) { transition-delay: .18s; }
-.projects .project:nth-child(6) { transition-delay: .22s; }
-.projects .project:nth-child(7) { transition-delay: .26s; }
 
 .about { display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px; align-items: center; max-width: 1180px; margin: 0 auto; }
 .about p { max-width: 50ch; }
@@ -389,9 +399,7 @@ p { margin: 0 0 1em; }
   transform: translateY(calc(36px * (1 - var(--p)))) rotateY(calc(70deg * var(--rp) * (1 - var(--p)))) scale(calc(.92 + .08 * var(--p)));
   transform-origin: 30% 50%;
 }
-.projects, .team, .cards { perspective: 1600px; }
-.projects .project:nth-child(odd).reveal.flip { --rp: 1; transform-origin: 70% 50%; }
-.projects .project:nth-child(even).reveal.flip { --rp: -1; }
+.team, .cards { perspective: 1600px; }
 .team .person.reveal.flip { --rp: -1; }
 .team .person:nth-child(2).reveal.flip { --rp: 1; transform-origin: 70% 50%; }
 .cards .card:nth-child(odd).reveal.flip { --rp: 1; transform-origin: 70% 50%; }
@@ -411,7 +419,7 @@ p { margin: 0 0 1em; }
     from { opacity: 0; transform: translateY(36px) rotateY(calc(70deg * var(--rp))) scale(.92); }
     to { opacity: 1; transform: translateY(0) rotateY(0deg) scale(1); }
   }
-  .avatar, .project__shot img { clip-path: none; }
+  .avatar { clip-path: none; }
   .map__line { animation: map-draw-scrub linear both; animation-timeline: view(); animation-range: entry 0% cover 38%; }
   @keyframes map-draw-scrub { from { stroke-dashoffset: 700; } to { stroke-dashoffset: 0; } }
 }
@@ -419,9 +427,6 @@ p { margin: 0 0 1em; }
    --p a mano en cada scroll y mueve el trazo del mapa directo por JS. */
 
 /* ---------- Responsive ---------- */
-@media (max-width: 1020px) {
-  .projects { grid-template-columns: repeat(2, 1fr); }
-}
 @media (max-width: 860px) {
   .burger { display: inline-flex; }
   .nav__links {
@@ -441,7 +446,7 @@ p { margin: 0 0 1em; }
   .nav.menu-open .nav__links a:nth-child(3) { transition-delay: .13s; }
   .nav.menu-open .nav__links a:nth-child(4) { transition-delay: .17s; }
   .nav.menu-open .nav__links a:nth-child(5) { transition-delay: .21s; }
-  .cards, .team, .about, .projects { grid-template-columns: 1fr; }
+  .cards, .team, .about { grid-template-columns: 1fr; }
   .map svg { max-width: 230px; }
   .hero::before { background: linear-gradient(180deg, var(--veil-soft), var(--veil) 55%, var(--bg)); }
   .footer__cols { grid-template-columns: 1fr 1fr; }
@@ -452,11 +457,11 @@ p { margin: 0 0 1em; }
      backdrop-filter, blend mode), que eran la causa real del "trabado". */
   .hero__fg { will-change: auto; }
   .reveal.flip { animation-name: reveal-scrub; }
-  .projects, .team, .cards { perspective: none; }
+  .team, .cards { perspective: none; }
 }
 
-.card h3, .project h3 { transition: color .35s; }
-.card:hover h3, .project:hover h3 { color: var(--accent); }
+.card h3 { transition: color .35s; }
+.card:hover h3 { color: var(--accent); }
 .footer__cols a { transition: transform .3s var(--ease-out), color .3s; }
 .footer__cols a:hover { transform: translateX(5px); }
 @media (prefers-reduced-motion: reduce) {
@@ -465,8 +470,8 @@ p { margin: 0 0 1em; }
   .map__line { stroke-dashoffset: 0; animation: none !important; }
   .map__dot { animation: none !important; }
   .hero__title img { animation: none; }
-  .hero__blob, .hero__bg, .kicker::before, .title::after, .values li, .avatar, .project h3 .arrow, .map figcaption { animation: none !important; }
-  .card:hover, .project:hover, .person:hover, .values li:hover, .ink-btn:hover { transform: none; }
+  .hero__blob, .hero__bg, .kicker::before, .title::after, .values li, .avatar, .map figcaption { animation: none !important; }
+  .card:hover, .person:hover, .values li:hover, .ink-btn:hover { transform: none; }
   :root { transition: none; }
   .progress-bar { animation: none !important; transform: none !important; }
   .nav__links, .nav__links a { transition: none !important; }
