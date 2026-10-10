@@ -38,49 +38,39 @@
   if (reduceMotion) {
     document.querySelectorAll('.reveal').forEach(el => el.style.setProperty('--p', 1));
   } else if (!viewTimelineSupported) {
-    // Ojo con el rendimiento acá: en vez de recalcular getBoundingClientRect
-    // de TODOS los .reveal en cada frame de scroll (carísimo en celulares,
-    // sobre todo con muchas tarjetas), se mantiene con un IntersectionObserver
-    // "grosero" (medio viewport de margen) un set chico con solo los
-    // elementos cerca de la pantalla, y solo esos se recalculan.
-    const revealEls = [...document.querySelectorAll('.reveal')];
-    const mapEl = document.querySelector('.map');
+    // Primero se leen TODAS las posiciones y después se escribe (sin
+    // intercalar), así el navegador hace un solo cálculo de layout por
+    // frame. Solo se escribe si el valor cambió, y los elementos que ya
+    // quedaron del todo fuera de pantalla se saltean (0 abajo, 1 arriba).
+    const items = [...document.querySelectorAll('.reveal, .map')];
     const mapLine = document.querySelector('.map__line');
-    const active = new Set();
-    const activateIO = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) active.add(e.target); else active.delete(e.target); });
-    }, { rootMargin: '50% 0px 50% 0px' });
-    revealEls.forEach(el => activateIO.observe(el));
-    if (mapEl) activateIO.observe(mapEl);
-
-    // Progreso 0→1 según cuánto del elemento ya cruzó la pantalla:
-    // 0 = recién asoma por abajo, 1 = ya entró del todo. El rango es
-    // más largo que el elemento en sí (38% del alto+viewport) para que
-    // la animación se note mientras el elemento está en pantalla, no
-    // solo en el instante en que cruza el borde. Mismo criterio que el
-    // animation-range del CSS (entry 0% cover 38%).
-    const progressOf = el => {
-      const r = el.getBoundingClientRect();
-      const span = (r.height + window.innerHeight) * 0.38;
-      const raw = (window.innerHeight - r.top) / span;
-      return Math.max(0, Math.min(1, raw));
+    const last = new Map();
+    const apply = (el, p) => {
+      if (last.get(el) === p) return;
+      last.set(el, p);
+      if (el.classList.contains('map')) { if (mapLine) mapLine.style.strokeDashoffset = String(700 * (1 - p)); }
+      else el.style.setProperty('--p', p);
     };
-
+    // Progreso 0→1 según cuánto del elemento ya cruzó la pantalla (mismo
+    // criterio que animation-range: entry 0% cover 38% del CSS).
     let revealTicking = false;
     const updateReveal = () => {
       if (revealTicking) return;
       revealTicking = true;
       requestAnimationFrame(() => {
-        active.forEach(el => {
-          const p = progressOf(el);
-          if (el === mapEl) { if (mapLine) mapLine.style.strokeDashoffset = String(700 * (1 - p)); }
-          else el.style.setProperty('--p', p.toFixed(3));
+        const vh = window.innerHeight;
+        const ps = items.map(el => {
+          const r = el.getBoundingClientRect();
+          const span = (r.height + vh) * 0.38;
+          return Math.max(0, Math.min(1, +(((vh - r.top) / span)).toFixed(3)));
         });
+        items.forEach((el, i) => apply(el, ps[i]));
         revealTicking = false;
       });
     };
     window.addEventListener('scroll', updateReveal, { passive: true });
     window.addEventListener('resize', updateReveal);
+    window.addEventListener('pageshow', updateReveal);
     updateReveal();
   }
 
