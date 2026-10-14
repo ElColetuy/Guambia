@@ -172,6 +172,10 @@
           }
         }
 
+        if (mobileView.matches) {
+          [heroInner, heroLogo, heroBg, heroFg].forEach(el => { if (el && el.style.cssText) el.style.cssText = ''; });
+        }
+
         if (heroActive && !mobileView.matches) {
           if (!reduceMotion && heroBg) {
             heroBg.style.transform = `translate3d(0, ${Math.min(y, 1000) * 0.25}px, 0)`;
