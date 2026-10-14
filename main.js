@@ -86,6 +86,15 @@
     setTimeout(spinLogo, 350);
   }
 
+  // El logo de la barra solo aparece cuando el logo grande del hero ya no se ve
+  const heroLogoImg = document.querySelector('.hero__title img');
+  if (heroLogoImg) {
+    nav.classList.add('nav--logo-hidden');
+    new IntersectionObserver(([e]) => {
+      nav.classList.toggle('nav--logo-hidden', e.intersectionRatio > 0.35);
+    }, { rootMargin: '-70px 0px 0px 0px', threshold: [0, 0.35, 0.7, 1] }).observe(heroLogoImg);
+  }
+
   // Link activo en el menú + acento de color por sección
   const links = [...document.querySelectorAll('.nav__links a')];
   const spy = new IntersectionObserver(entries => {

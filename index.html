@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Guambia Software</title>
-  <meta name="description" content="Guambia Software: sitios web, automatizaciones, control de stock y gestión de usuarios. Hecho en Montevideo, Uruguay." />
-  <meta name="theme-color" content="#F4F8FC" />
+  <title>Guambia Software · Creamos páginas web para Uruguay</title>
+  <meta name="description" content="Creamos páginas web para Uruguay: diseño web profesional y herramientas de software a medida. Planes desde $2.000 UYU. Guambia Software, Montevideo." />
+  <meta name="theme-color" content="#FAFAF8" />
   <link rel="icon" href="assets/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png" />
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <script>
     try { const t = localStorage.getItem('guambia-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -26,6 +26,7 @@
     <a href="#top" class="nav__logo" aria-label="Guambia Software, inicio"><img src="assets/logo.png" alt="Guambia Software" /></a>
     <nav class="nav__links" id="menu">
       <a href="#servicios">Servicios</a>
+      <a href="#planes">Planes</a>
       <a href="#proyectos">Proyectos</a>
       <a href="#nosotros">Nosotros</a>
       <a href="#equipo">Equipo</a>
@@ -44,26 +45,34 @@
       <div class="hero__fg" aria-hidden="true"><div class="hero__fg__img"></div></div>
       <div class="hero__inner">
         <h1 class="hero__title"><img src="assets/logo.png" alt="Guambia Software" width="1227" height="638" /></h1>
+        <h2 class="hero__headline">Creamos páginas web para <em>Uruguay</em>.</h2>
         <p class="hero__lead">
-          Elevamos tu marca, emprendimiento, negocio o empresa a nivel digital. Hacemos sitios web, automatizaciones y sistemas a medida, desde Montevideo.
+          Diseñamos y desarrollamos sitios web profesionales, y herramientas de software a medida para que tu negocio funcione mejor. Desde Montevideo.
         </p>
         <div class="hero__ctas">
-          <a href="#contacto" class="ink-btn ink-btn--blue">Quiero mi proyecto ↗</a>
-          <a href="#servicios" class="ink-btn">Qué hacemos</a>
+          <a href="#contacto" class="ink-btn ink-btn--blue">Quiero mi proyecto →</a>
+          <a href="#planes" class="ink-btn">Ver planes</a>
         </div>
+        <ul class="hero__tags" aria-label="Qué hacemos">
+          <li>Diseño web</li><li>Desarrollo a medida</li><li>SEO</li><li>Software profesional</li>
+        </ul>
       </div>
     </section>
 
     <!-- SERVICIOS -->
     <section class="section" id="servicios">
-      <h2 class="title reveal">Lo que <span class="title__accent">hacemos</span>.</h2>
-      <p class="intro reveal">Sitios web, automatizaciones, soluciones para control de stock, gestión de usuarios y todo lo que tu proyecto necesite.</p>
-
+      <h2 class="title reveal">Diseño web y <span class="title__accent">software a medida</span>.</h2>
+      <p class="intro reveal">Nos enfocamos en sitios web bien diseñados y en herramientas de software profesionales para que tu negocio crezca.</p>
       <div class="cards">
         <article class="card reveal flip">
-          <p class="kicker">Web · Diseño</p>
-          <h3>Sitios web</h3>
-          <p>Tu página, tu tienda o tu landing. Que cargue rápido, que se vea bien en el celular y que la puedas actualizar sin llamarnos.</p>
+          <p class="kicker">Diseño web</p>
+          <h3>Sitios web a medida</h3>
+          <p>Landing pages y sitios de varias páginas diseñados para tu marca: claros, rápidos y adaptados a celulares, tablets y computadoras.</p>
+        </article>
+        <article class="card reveal flip">
+          <p class="kicker">Desarrollo · SEO</p>
+          <h3>Desarrollo y posicionamiento</h3>
+          <p>Formularios, integraciones con herramientas externas, optimización de rendimiento y SEO técnico para que te encuentren en Google.</p>
         </article>
         <article class="card reveal flip">
           <p class="kicker">Procesos · Integraciones</p>
@@ -80,6 +89,93 @@
           <h3>Gestión de usuarios</h3>
           <p>Registros, roles y permisos para tu equipo y tus clientes. Cada uno ve lo que tiene que ver.</p>
         </article>
+        <article class="card reveal flip">
+          <p class="kicker">Software a medida</p>
+          <h3>Apps y sistemas</h3>
+          <p>Herramientas profesionales a medida para tu negocio, desde una app móvil hasta un sistema interno de gestión.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- PLANES -->
+    <section class="section" id="planes">
+      <h2 class="title reveal">Planes de <span class="title__accent">desarrollo web</span>.</h2>
+      <p class="intro reveal">Elegí el plan que mejor se adapte a tu negocio. Todos los precios están en pesos uruguayos.</p>
+      <div class="plans">
+        <article class="plan reveal flip">
+          <h3>Plan Básico</h3>
+          <p class="plan__price">$2.000<small>UYU</small></p>
+          <p class="plan__for">Ideal para emprendedores y pequeños negocios que necesitan presencia en internet.</p>
+          <p class="plan__base" aria-hidden="true"></p>
+          <ul>
+            <li>Landing page de una sola página</li>
+            <li>Hasta 15 imágenes</li>
+            <li>Información básica del negocio</li>
+            <li>Datos de contacto y redes sociales</li>
+            <li>Diseño adaptable a celulares, tablets y computadoras</li>
+            <li>Botones de contacto directo por WhatsApp</li>
+            <li>Enlaces a redes sociales</li>
+          </ul>
+          <a href="mailto:colettostudios@gmail.com?subject=Plan%20B%C3%A1sico" class="ink-btn">Consultar plan</a>
+        </article>
+        <article class="plan reveal flip">
+          <h3>Plan Avanzado</h3>
+          <p class="plan__price">$4.000<small>UYU</small></p>
+          <p class="plan__for">Ideal para negocios que buscan una presencia digital más completa y profesional.</p>
+          <p class="plan__base">Incluye todo lo del Plan Básico, más:</p>
+          <ul>
+            <li>Fotografías ilimitadas</li>
+            <li>Varias páginas y secciones personalizadas</li>
+            <li>Información completa del negocio</li>
+            <li>Páginas optimizadas para indexación en Google</li>
+            <li>Formularios y diferentes vías de contacto</li>
+            <li>Diseño personalizado</li>
+            <li>5 horas de soporte mensual</li>
+            <li>Hosting gratuito durante el primer año</li>
+          </ul>
+          <a href="mailto:colettostudios@gmail.com?subject=Plan%20Avanzado" class="ink-btn">Consultar plan</a>
+        </article>
+        <article class="plan reveal flip">
+          <h3>Plan Pro</h3>
+          <p class="plan__price">$8.000<small>UYU</small></p>
+          <p class="plan__for">Ideal para empresas que necesitan una web avanzada, personalizada y escalable.</p>
+          <p class="plan__base">Incluye todo lo del Plan Avanzado, más:</p>
+          <ul>
+            <li>Fotografías ilimitadas</li>
+            <li>Páginas y secciones según las necesidades del proyecto</li>
+            <li>Diseño avanzado y personalizado</li>
+            <li>Animaciones e interacciones</li>
+            <li>Optimización de rendimiento</li>
+            <li>Integraciones con herramientas externas</li>
+            <li>Formularios avanzados</li>
+            <li>Funcionalidades personalizadas según el proyecto</li>
+            <li>Optimización SEO técnica</li>
+            <li>Hosting gratuito durante el primer año</li>
+          </ul>
+          <a href="mailto:colettostudios@gmail.com?subject=Plan%20Pro" class="ink-btn">Consultar plan</a>
+        </article>
+      </div>
+      <h3 class="compare-title reveal">Comparación de planes</h3>
+      <div class="compare reveal">
+        <table>
+          <thead>
+            <tr><th scope="col">Característica</th><th scope="col">Básico</th><th scope="col">Avanzado</th><th scope="col">Pro</th></tr>
+          </thead>
+          <tbody>
+            <tr class="price"><th scope="row">Precio (UYU)</th><td>$2.000</td><td>$4.000</td><td>$8.000</td></tr>
+            <tr><th scope="row">Landing page</th><td><span class="yes"><span class="sr-only">Incluido</span></span></td><td><span class="yes"><span class="sr-only">Incluido</span></span></td><td><span class="yes"><span class="sr-only">Incluido</span></span></td></tr>
+            <tr><th scope="row">Fotografías</th><td>Hasta 15</td><td>Ilimitadas</td><td>Ilimitadas</td></tr>
+            <tr><th scope="row">Varias páginas</th><td><span class="no"><span class="sr-only">No incluido</span></span></td><td><span class="yes"><span class="sr-only">Incluido</span></span></td><td><span class="yes"><span class="sr-only">Incluido</span></span></td></tr>
+            <tr><th scope="row">Diseño responsive</th><td><span class="yes"><span class="sr-only">Incluido</span></span></td><td><span class="yes"><span class="sr-only">Incluido</span></span></td><td><span class="yes"><span class="sr-only">Incluido</span></span></td></tr>
+            <tr><th scope="row">Contacto y redes</th><td><span class="yes"><span class="sr-only">Incluido</span></span></td><td><span class="yes"><span class="sr-only">Incluido</span></span></td><td><span class="yes"><span class="sr-only">Incluido</span></span></td></tr>
+            <tr><th scope="row">Indexación en Google</th><td>Básica</td><td><span class="yes"><span class="sr-only">Incluido</span></span></td><td><span class="yes"><span class="sr-only">Incluido</span></span></td></tr>
+            <tr><th scope="row">Diseño personalizado</th><td>Básico</td><td><span class="yes"><span class="sr-only">Incluido</span></span></td><td>Avanzado</td></tr>
+            <tr><th scope="row">Animaciones</th><td><span class="no"><span class="sr-only">No incluido</span></span></td><td>Básicas</td><td>Avanzadas</td></tr>
+            <tr><th scope="row">Integraciones externas</th><td><span class="no"><span class="sr-only">No incluido</span></span></td><td><span class="no"><span class="sr-only">No incluido</span></span></td><td><span class="yes"><span class="sr-only">Incluido</span></span></td></tr>
+            <tr><th scope="row">Soporte mensual</th><td>—</td><td>5 horas</td><td>A definir</td></tr>
+            <tr><th scope="row">Hosting primer año</th><td>A definir</td><td>Gratis</td><td>Gratis</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
@@ -162,7 +258,7 @@
       <div class="team">
         <article class="person reveal flip">
           <div class="person__head">
-            <img src="assets/team/bruno.jpg" alt="Bruno Arias" class="avatar avatar--blue" width="480" height="480" />
+            <img src="assets/team/bruno.jpg" alt="Bruno Arias" class="avatar" width="480" height="480" />
             <div>
               <h3>Bruno Arias</h3>
               <p class="person__role">Co-Founder</p>
@@ -173,7 +269,7 @@
         </article>
         <article class="person reveal flip">
           <div class="person__head">
-            <img src="assets/team/rodrigo.jpg" alt="Rodrigo Coletto" class="avatar avatar--red" width="480" height="480" />
+            <img src="assets/team/rodrigo.jpg" alt="Rodrigo Coletto" class="avatar" width="480" height="480" />
             <div>
               <h3>Rodrigo Coletto</h3>
               <p class="person__role">Co-Founder</p>
@@ -188,7 +284,7 @@
     <!-- CONTACTO -->
     <section class="section contact" id="contacto">
       <div class="contact__box reveal">
-        <h2 class="title">¿Tenés una idea? <span class="title__accent">Hablemos</span>.</h2>
+        <h2 class="title">¿Querés tu página web o un sistema a medida? <span class="title__accent">Hablemos</span>.</h2>
         <p>Contanos qué necesitás y te respondemos con una propuesta. Sin vueltas.</p>
         <div class="hero__ctas">
           <a href="mailto:colettostudios@gmail.com" class="ink-btn ink-btn--red">Escribinos ↗</a>
@@ -205,7 +301,8 @@
       </div>
       <div>
         <p class="kicker">Servicios</p>
-        <a href="#servicios">Sitios web</a>
+        <a href="#planes">Planes web</a>
+        <a href="#servicios">Diseño y desarrollo web</a>
         <a href="#servicios">Automatizaciones</a>
         <a href="#servicios">Control de stock</a>
         <a href="#servicios">Gestión de usuarios</a>
