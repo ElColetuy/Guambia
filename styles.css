@@ -13,9 +13,6 @@
   --blue-soft: #BCD1F3;
   --red: #B03A3F;
   --ok: #2F7D57;
-  --veil: rgba(220, 231, 250, .72);
-  --veil-soft: rgba(220, 231, 250, .3);
-  --hero-tint: rgba(23, 53, 111, .5);
   --btn-bg: #2557C8;
   --btn-fg: #FFFFFF;
   --chrome-bg: #17356F;
@@ -37,17 +34,15 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #09090B; --bg-alt: #0F0F12; --paper: #141417; --ink: #F4F4F5; --text: #D2D3D8; --muted: #8B8D96;
-    --line: #25252A; --line-strong: #3A3A41; --blue: #7C9DDB; --blue-soft: #181E2D; --red: #D9777B; --ok: #5FB88A;
-    --veil: rgba(9, 9, 11, .88); --veil-soft: rgba(9, 9, 11, .5); --shadow-tint: 0, 0, 0; color-scheme: dark;
-    --hero-tint: transparent; --btn-bg: #F4F4F5; --btn-fg: #09090B;
+    --line: #25252A; --line-strong: #3A3A41; --blue: #7C9DDB; --blue-soft: #181E2D; --red: #D9777B; --ok: #5FB88A; --shadow-tint: 0, 0, 0; color-scheme: dark;
+    --btn-bg: #F4F4F5; --btn-fg: #09090B;
     --chrome-bg: #0C0C0F; --chrome-fg: #F4F4F5; --chrome-muted: #9A9CA6; --nav-cta-bg: #F4F4F5; --nav-cta-fg: #09090B; --nav-icon-bg: #141417; --nav-icon-bd: #3A3A41;
   }
 }
 :root[data-theme="dark"] {
   --bg: #09090B; --bg-alt: #0F0F12; --paper: #141417; --ink: #F4F4F5; --text: #D2D3D8; --muted: #8B8D96;
-  --line: #25252A; --line-strong: #3A3A41; --blue: #7C9DDB; --blue-soft: #181E2D; --red: #D9777B; --ok: #5FB88A;
-  --veil: rgba(9, 9, 11, .88); --veil-soft: rgba(9, 9, 11, .5); --shadow-tint: 0, 0, 0; color-scheme: dark;
-  --hero-tint: transparent; --btn-bg: #F4F4F5; --btn-fg: #09090B;
+  --line: #25252A; --line-strong: #3A3A41; --blue: #7C9DDB; --blue-soft: #181E2D; --red: #D9777B; --ok: #5FB88A; --shadow-tint: 0, 0, 0; color-scheme: dark;
+  --btn-bg: #F4F4F5; --btn-fg: #09090B;
   --chrome-bg: #0C0C0F; --chrome-fg: #F4F4F5; --chrome-muted: #9A9CA6; --nav-cta-bg: #F4F4F5; --nav-cta-fg: #09090B; --nav-icon-bg: #141417; --nav-icon-bd: #3A3A41;
 }
 
@@ -129,10 +124,11 @@ p { margin: 0 0 1em; }
   transition: padding .3s var(--ease-out), background-color .3s, box-shadow .3s;
   overflow-anchor: none;
 }
-.nav.nav--scrolled { padding-top: 8px; padding-bottom: 8px; box-shadow: 0 10px 24px -20px rgba(var(--shadow-tint), .5); }
+.nav.nav--scrolled { box-shadow: 0 10px 24px -20px rgba(var(--shadow-tint), .5); }
+.nav--over:not(.nav--scrolled) { background: transparent; border-bottom-color: transparent; }
+.nav--over ~ main .hero { margin-top: -65px; padding-top: calc(65px + 3svh); }
 .nav__logo { transition: opacity .3s var(--ease-out), transform .3s var(--ease-out); }
 .nav__logo img { height: 40px; width: auto; transition: height .3s var(--ease-out); }
-.nav.nav--scrolled .nav__logo img { height: 34px; }
 .nav--logo-hidden .nav__logo { opacity: 0; transform: translateY(-6px); pointer-events: none; }
 .nav__links { display: flex; gap: 30px; font: 500 15px var(--f-ink); color: var(--chrome-muted); }
 .nav__links a { position: relative; padding: 6px 0; transition: color .2s; }
@@ -151,52 +147,40 @@ p { margin: 0 0 1em; }
 .nav .ink-btn--icon:hover { border-color: var(--chrome-fg); }
 
 /* ---------- Hero ---------- */
-.hero { position: relative; isolation: isolate; overflow: hidden; text-align: center; justify-content: center; display: flex; align-items: center; padding: 30px var(--pad) 44px; }
+.hero { position: relative; isolation: isolate; overflow: hidden; text-align: center; justify-content: center; display: flex; align-items: center; padding: 40px var(--pad) 54px; min-height: 100vh; min-height: 100svh; border-bottom: 1px solid var(--line-strong); }
 .hero__bg {
-  position: absolute; inset: -30px; z-index: -3;
-  background: url('assets/rambla.jpg') center 62% / cover no-repeat;
+  position: absolute; inset: -30px; z-index: -2;
+  background: url('assets/header.jpg') center 58% / cover no-repeat;
   will-change: transform;
-}
-/* Misma foto sin cielo, por delante del fondo: crece y se mueve distinto
-   al hacer scroll para dar profundidad. */
-.hero__fg {
-  position: absolute; inset: -90px -30px -30px -30px; z-index: -2; overflow: hidden;
-  transform: translate3d(0, 0, 0) scale(1.06);
-  will-change: transform;
-  transform-origin: 50% 100%;
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%);
-          mask-image: linear-gradient(to bottom, transparent, #000 22%);
-}
-.hero__fg__img {
-  position: absolute; inset: -50px -25px -25px -25px;
-  background: url('assets/rambla-fg.webp') center 62% / cover no-repeat;
 }
 .hero::before {
   content: ''; position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(180deg, var(--hero-tint), transparent 55%), radial-gradient(ellipse 85% 95% at 50% 50%, var(--veil) 0%, var(--veil) 45%, var(--veil-soft) 100%), linear-gradient(0deg, var(--bg), transparent 22%);
+  background: radial-gradient(ellipse 90% 80% at 50% 42%, rgba(8, 24, 64, .2) 0%, rgba(5, 14, 40, .62) 100%), linear-gradient(180deg, rgba(5, 14, 40, .5) 0%, transparent 28%), linear-gradient(0deg, rgba(5, 14, 40, .45) 0%, transparent 30%);
 }
 .hero__inner { max-width: 900px; margin-inline: auto; position: relative; z-index: 1; will-change: transform, opacity; }
-.hero__title { margin: 0 0 24px; line-height: 0; }
-.hero__title img { width: 100%; max-width: 300px; height: auto; margin-inline: auto; rotate: -6deg; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.hero__title { margin: 0 0 clamp(20px, 4.5svh, 34px); line-height: 0; }
+.hero__title img { width: 100%; max-width: min(100%, 340px, 40svh); height: auto; margin-inline: auto; rotate: -6deg; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .hero__title img.spin { animation: spin3d .9s cubic-bezier(.45, .05, .25, 1); }
 @keyframes spin3d {
   from { transform: perspective(900px) rotateY(0deg); }
   to { transform: perspective(900px) rotateY(360deg); }
 }
 .hero__headline {
-  font: 700 clamp(30px, 4.6vw, 52px)/1.08 var(--f-ink); letter-spacing: -.035em; color: var(--ink); margin: 0 0 20px;
+  font: 700 clamp(28px, min(4.6vw, 6.4svh), 52px)/1.08 var(--f-ink); letter-spacing: -.035em; color: #fff; margin: 0 0 22px;
 }
 .hero__lead {
-  max-width: 660px; margin: 0 auto 24px; padding: 20px 28px; text-align: center;
-  background: color-mix(in srgb, var(--paper) 88%, transparent); border: 1px solid var(--line-strong); border-radius: 16px;
-  box-shadow: 0 18px 36px -24px rgba(var(--shadow-tint), .55);
+  max-width: 680px; margin: 0 auto 28px; padding: 22px 30px; text-align: center;
+  background: var(--paper); border: 3px solid #fff; border-radius: 18px;
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, .22), 0 28px 50px -18px rgba(0, 0, 0, .65);
 }
 .hero__lead p { margin: 0; font-size: clamp(17px, 1.7vw, 20px); line-height: 1.5; color: var(--ink); }
-.hero__lead .hero__price { margin-top: 10px; font-size: clamp(16px, 1.5vw, 18px); color: var(--text); }
-.hero__lead .hero__price strong { color: var(--ink); font-weight: 700; }
+.hero__lead .hero__price { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line-strong); font-size: clamp(16px, 1.5vw, 18px); color: var(--text); }
+.hero__lead .hero__price strong { color: var(--blue); font-weight: 700; }
 .hero__ctas { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px 18px; }
 .hero__ctas .ink-btn { font-size: 18px; padding: 19px 38px; border-radius: 12px; }
-.hero__ctas .ink-btn:not(.ink-btn--blue):not(.ink-btn--red) { border-color: var(--blue); color: var(--blue); }
+.hero__ctas .ink-btn:not(.ink-btn--blue):not(.ink-btn--red) { background: #fff; border-color: #fff; color: #17356F; }
+.hero__ctas .ink-btn--blue { border-color: rgba(255, 255, 255, .55); }
+.contact__box .hero__ctas .ink-btn--red { border-color: var(--btn-bg); }
 .contact__box .hero__ctas { justify-content: flex-start; }
 
 /* ---------- Secciones ---------- */
@@ -244,6 +228,19 @@ p { margin: 0 0 1em; }
 .cta-band p { flex: 1 1 360px; margin: 0; font: 600 clamp(20px, 2.4vw, 26px)/1.25 var(--f-ink); letter-spacing: -.02em; color: var(--btn-fg); }
 .cta-band .ink-btn { flex: none; background: var(--paper); color: var(--ink); border-color: transparent; font-size: 16px; padding: 16px 28px; }
 .cta-band .ink-btn:hover { background: var(--bg-alt); border-color: transparent; }
+
+#servicios > .title, #planes > .title, #proyectos > .title, #equipo > .title { text-align: center; }
+#servicios > .intro, #planes > .intro, #proyectos > .intro { text-align: center; margin-inline: auto; }
+
+/* ---------- Ventajas ---------- */
+.benefits { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(36px, 6vw, 84px); align-items: start; }
+.benefits__intro { position: sticky; top: 110px; }
+.benefits__intro .intro { margin-bottom: 28px; }
+.benefits__list { list-style: none; margin: 0; padding: 0; }
+.benefits__list li { padding: 26px 0; border-top: 1px solid var(--line-strong); }
+.benefits__list li:last-child { border-bottom: 1px solid var(--line-strong); }
+.benefits__list h3 { font: 600 22px/1.2 var(--f-ink); letter-spacing: -.02em; color: var(--ink); margin: 0 0 8px; }
+.benefits__list p { margin: 0; color: var(--text); max-width: 52ch; }
 
 /* ---------- Planes ---------- */
 .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: stretch; }
@@ -390,7 +387,7 @@ p { margin: 0 0 1em; }
   .burger { display: inline-flex; }
   .nav__cta { display: none; }
   .hero__ctas .ink-btn { font-size: 17px; padding: 18px 30px; }
-  .hero__title img { max-width: 250px; }
+  .hero__title img { max-width: min(78%, 300px, 38svh); }
   .nav__links {
     position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; gap: 14px;
     padding: 22px var(--pad) 26px; background: var(--chrome-bg); border-bottom: 1px solid var(--line); font-size: 20px;
@@ -401,14 +398,13 @@ p { margin: 0 0 1em; }
     opacity: 1; visibility: visible; transform: none;
     transition: opacity .25s var(--ease-out), transform .25s var(--ease-out), visibility 0s;
   }
-  .cards, .team, .about, .projects { grid-template-columns: 1fr; }
+  .cards, .team, .about, .projects, .benefits { grid-template-columns: 1fr; }
+  .benefits__intro { position: static; }
   .map svg { max-width: 240px; }
-  .hero::before { background: linear-gradient(180deg, var(--hero-tint), transparent 50%), linear-gradient(180deg, var(--veil-soft), var(--veil) 55%, var(--bg)); }
   .footer__cols { grid-template-columns: 1fr 1fr; }
   .footer__cols > div:first-child { grid-column: 1 / -1; }
 
   /* El celular tiene menos GPU: sin parallax ni giro 3D. */
-  .hero__fg { will-change: auto; }
   .reveal.flip { animation-name: reveal-scrub; }
   .projects, .team, .cards, .plans { perspective: none; }
 }

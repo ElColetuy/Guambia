@@ -86,6 +86,8 @@
     setTimeout(spinLogo, 350);
   }
 
+  if (document.querySelector('.hero')) nav.classList.add('nav--over');
+
   // El logo de la barra solo aparece cuando el logo grande del hero ya no se ve
   const heroLogoImg = document.querySelector('.hero__title img');
   if (heroLogoImg) {
@@ -128,7 +130,6 @@
   // pesaba en celulares, porque corría en TODO el largo de la página.
   const heroEl = document.querySelector('.hero');
   const heroBg = document.querySelector('.hero__bg');
-  const heroFg = document.querySelector('.hero__fg');
   const heroInner = document.querySelector('.hero__inner');
   const heroLogo = document.querySelector('.hero__title');
   let heroH = heroEl?.offsetHeight || window.innerHeight;
@@ -173,18 +174,12 @@
         }
 
         if (mobileView.matches) {
-          [heroInner, heroLogo, heroBg, heroFg].forEach(el => { if (el && el.style.cssText) el.style.cssText = ''; });
+          [heroInner, heroLogo, heroBg].forEach(el => { if (el && el.style.cssText) el.style.cssText = ''; });
         }
 
         if (heroActive && !mobileView.matches) {
           if (!reduceMotion && heroBg) {
             heroBg.style.transform = `translate3d(0, ${Math.min(y, 1000) * 0.25}px, 0)`;
-          }
-          if (!reduceMotion && heroFg) {
-            // Se mueve más rápido y se agranda más que el fondo: da la
-            // sensación de que el primer plano avanza hacia la cámara.
-            const yf = Math.min(y, 900);
-            heroFg.style.transform = `translate3d(0, ${yf * 0.09}px, 0) scale(${1.06 + yf * 0.0005})`;
           }
           if (!reduceMotion && heroInner) {
             const fade = Math.max(1 - y / (heroH * 0.75), 0);
