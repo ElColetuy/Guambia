@@ -134,6 +134,10 @@
   const heroLogo = document.querySelector('.hero__title');
   let heroH = heroEl?.offsetHeight || window.innerHeight;
   const mobileView = window.matchMedia('(max-width: 860px)');
+  // Única condición para tocar estilos del hero: lo que se oculta al salir
+  // solo lo puede volver a mostrar el parallax, así que ambos van atados a
+  // lo mismo (si no, el hero queda invisible al volver a subir).
+  const heroAnimated = () => !reduceMotion && !mobileView.matches;
   let heroActive = true;
   const remeasureHero = () => { heroH = heroEl?.offsetHeight || window.innerHeight; };
   window.addEventListener('resize', remeasureHero);
@@ -169,7 +173,7 @@
           if (!heroActive) {
             // Se sale del hero: deja los estilos en su estado final en vez
             // de a mitad de animación, y no los vuelve a tocar hasta volver.
-            if (heroInner && !mobileView.matches) { heroInner.style.opacity = 0; }
+            if (heroInner && heroAnimated()) { heroInner.style.opacity = 0; }
           }
         }
 
@@ -177,16 +181,16 @@
           [heroInner, heroLogo, heroBg].forEach(el => { if (el && el.style.cssText) el.style.cssText = ''; });
         }
 
-        if (heroActive && !mobileView.matches) {
-          if (!reduceMotion && heroBg) {
+        if (heroActive && heroAnimated()) {
+          if (heroBg) {
             heroBg.style.transform = `translate3d(0, ${Math.min(y, 1000) * 0.25}px, 0)`;
           }
-          if (!reduceMotion && heroInner) {
+          if (heroInner) {
             const fade = Math.max(1 - y / (heroH * 0.75), 0);
             heroInner.style.opacity = fade;
             heroInner.style.transform = `translate3d(0, ${Math.min(y * 0.18, 70)}px, 0)`;
           }
-          if (!reduceMotion && heroLogo) {
+          if (heroLogo) {
             // El logo se corre hacia la izquierda al bajar, y vuelve solo a
             // su lugar al subir (es una función directa de "y", no un
             // interruptor: por eso se deshace solo, como todo lo demás).
