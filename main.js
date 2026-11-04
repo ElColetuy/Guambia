@@ -110,6 +110,38 @@
     }, { passive: true });
     window.addEventListener('resize', updateCarousel);
     updateCarousel();
+
+    // Pasa solo cada 4 s; se frena con mouse, foco, dedo, pestaña oculta o fuera de pantalla.
+    if (!reduceMotion) {
+      let timer = null, visible = false;
+      const advance = () => {
+        const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+        track.scrollTo({ left: atEnd ? 0 : track.scrollLeft + step(), behavior: 'smooth' });
+      };
+      const stop = () => { clearInterval(timer); timer = null; };
+      const start = () => { stop(); if (visible && !document.hidden) timer = setInterval(advance, 4000); };
+      carousel.addEventListener('mouseenter', stop);
+      carousel.addEventListener('mouseleave', start);
+      carousel.addEventListener('focusin', stop);
+      carousel.addEventListener('focusout', start);
+      carousel.addEventListener('touchstart', stop, { passive: true });
+      carousel.addEventListener('touchend', () => setTimeout(start, 6000), { passive: true });
+      document.addEventListener('visibilitychange', start);
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; start(); }, { threshold: 0.3 }).observe(carousel);
+    }
+  }
+
+  // Moneda animada (Lottie) al lado del botón "Quiero mi web"
+  const coinBox = document.getElementById('navCoin');
+  if (coinBox) {
+    window.addEventListener('load', () => {
+      if (!window.lottie) return;
+      const coin = window.lottie.loadAnimation({ container: coinBox, renderer: 'svg', loop: false, autoplay: false, path: 'assets/coin.json' });
+      if (reduceMotion) { coin.addEventListener('DOMLoaded', () => coin.goToAndStop(0, true)); return; }
+      const play = () => coin.goToAndPlay(0, true);
+      coin.addEventListener('DOMLoaded', () => { play(); setInterval(play, 3500); });
+      coinBox.addEventListener('mouseenter', play);
+    });
   }
 
   // El logo de la barra solo aparece cuando el logo grande del hero ya no se ve
