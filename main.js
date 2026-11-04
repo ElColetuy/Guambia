@@ -88,6 +88,30 @@
 
   if (document.querySelector('.hero')) nav.classList.add('nav--over');
 
+  // Carrusel de proyectos
+  const carousel = document.querySelector('[data-carousel]');
+  if (carousel) {
+    const track = carousel.querySelector('.projects');
+    const prev = carousel.querySelector('[data-prev]');
+    const next = carousel.querySelector('[data-next]');
+    const step = () => { const c = track.querySelector('.project'); return c ? c.getBoundingClientRect().width + 20 : 300; };
+    const behavior = reduceMotion ? 'auto' : 'smooth';
+    prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior }));
+    next.addEventListener('click', () => track.scrollBy({ left: step(), behavior }));
+    let carTick = false;
+    const updateCarousel = () => {
+      prev.disabled = track.scrollLeft < 4;
+      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+    };
+    track.addEventListener('scroll', () => {
+      if (carTick) return;
+      carTick = true;
+      requestAnimationFrame(() => { updateCarousel(); carTick = false; });
+    }, { passive: true });
+    window.addEventListener('resize', updateCarousel);
+    updateCarousel();
+  }
+
   // El logo de la barra solo aparece cuando el logo grande del hero ya no se ve
   const heroLogoImg = document.querySelector('.hero__title img');
   if (heroLogoImg) {
