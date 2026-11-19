@@ -162,7 +162,7 @@ p { margin: 0 0 1em; }
 }
 .hero__inner { max-width: 900px; margin-inline: auto; position: relative; z-index: 1; will-change: transform, opacity; }
 .hero__title { margin: 0 0 clamp(20px, 4.5svh, 34px); line-height: 0; }
-.hero__title img { width: 100%; max-width: min(100%, 340px, 40svh); height: auto; margin-inline: auto; rotate: -6deg; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.hero__title img { width: 100%; max-width: min(100%, 440px, 52svh); height: auto; margin-inline: auto; rotate: -6deg; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .hero__title img.spin { animation: spin3d .9s cubic-bezier(.45, .05, .25, 1); }
 @keyframes spin3d {
   from { transform: perspective(900px) rotateY(0deg); }
@@ -393,7 +393,7 @@ p { margin: 0 0 1em; }
   .nav__cta { display: none; }
   .nav__coin { display: none; }
   .hero__ctas .ink-btn { font-size: 17px; padding: 18px 30px; }
-  .hero__title img { max-width: min(78%, 300px, 38svh); }
+  .hero__title img { max-width: min(86%, 380px, 48svh); }
   .nav__links {
     position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; gap: 14px;
     padding: 22px var(--pad) 26px; background: var(--chrome-bg); border-bottom: 1px solid var(--line); font-size: 20px;
